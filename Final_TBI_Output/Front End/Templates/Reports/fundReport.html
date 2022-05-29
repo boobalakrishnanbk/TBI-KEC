@@ -1,0 +1,247 @@
+{% extends "body.html" %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block CSS %}
+{% endblock CSS %}
+
+{% block title %}
+Report
+{% endblock title %}
+
+{% block content %}
+<div class="main-content">
+    <section class="section">
+    <div class="section-header">
+        <div class="col">
+            <h1>Report</h1>
+        </div>
+    </div>
+    <div class="row">
+        <!-- Customize -->
+        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4>Cusomize your Report</h4>
+                </div>
+                <div class="card-body">
+                    <form action="{% url 'reportFund' %}" class="row" method="post">
+                        {% csrf_token %}
+
+                        <div class="col-3">
+                            <div class="form-group">
+                                <div id="" class="form-group">
+                                    <label for="id_startAge" class=" requiredField">
+                                        Year From<span class="asteriskField">*</span>
+                                    </label>
+                                    <div class="">
+                                        <input type="number" placeholder="YYYY" name="startYear" class="form-control" min=2005 max=2100 required="" id="id_startYear" value="{{ from }}">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-3">
+                            <div class="form-group">
+                                <div id="" class="form-group">
+                                    <label for="id_endYear" class=" requiredField">
+                                        Year To<span class="asteriskField">*</span>
+                                    </label>
+                                    <div class="">
+                                        <input type="number" placeholder="YYYY" name="toYear" class="form-control" min=2005 max=2100 required id="id_endYear" value="{{ to }}">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-1">
+                            <div class="form-group">
+                                <div id="" class="form-group">
+                                    <div class="">
+                                        <input type="submit" value="Fetch" class="btn btn-primary m-t-35">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- chart -->
+
+        <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12 col-6">
+            <div class="card">
+                <div class="card-header">
+                    <h4>Sanctioned Fund Analytics</h4>
+                </div>
+                <div class="card-body">
+                    <div class="recent-report__chart">
+                    <div id="sanctioned"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12 col-6">
+            <div class="card">
+                <div class="card-header">
+                    <h4>Interest And Returned Fund Analytics</h4>
+                </div>
+                <div class="card-body">
+                    <div class="recent-report__chart">
+                    <div id="intrest_and_returned"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- data -->
+        <div class="col-12 col-sm-12 col-lg-12">
+        <div class="card">
+            <div class="card-header">
+            <h4>Fund Report</h4>
+            </div>
+            <div class="card-body">
+            <div class="table-responsive table-invoice">
+                <table class="table table-striped text-center">
+                    <thead>
+                        <tr>
+                            <th>Year</th>
+                            <th>No. of Incubatees</th>
+                            <th>Sanctioned Amount</th>
+                            <th>Disbursed Amount</th>
+                            <th>Pending Disbursment</th>
+                            <th>Utilized Amount</th>
+                            <th>Balance Amount</th>
+                            <th>Returned Amount</th>
+                            <th>Interest Amount</th>
+                        </tr>
+                    </thead>
+                {% for i in report %}
+                <tr>
+                    <td>{{ i.financialYear }}</td>
+                    <td class="text-center">{{ i.incubatees }}</td>
+                    <td class="text-right">₹ {{ i.sanctioned }}</td>
+                    <td class="text-right">₹ {{ i.disbursed }}</td>
+                    <td class="text-right">₹ {{ i.pending }}</td>
+                    <td class="text-right">₹ {{ i.utilized }}</td>
+                    <td class="text-right">₹ {{ i.balance }}</td>
+                    <td class="text-right">₹ {{ i.returned }}</td>
+                    <td class="text-right">₹ {{ i.interest }}</td>
+                </tr>
+                {% endfor %}
+                </table>
+            </div>
+            </div>
+        </div>
+        </div>
+    </div>
+    </section>  
+</div>
+
+
+
+{% endblock content %}
+
+{% block js %}
+
+<script src="{% static 'Front End/JS/bundles/chart.min.js' %}"></script>
+<script src="{% static 'Front End/JS/bundles/apexcharts.min.js' %}"></script>
+<script>
+    var a = document.getElementById("fundReport");
+    a.classList.add("active");
+    var a = document.getElementById("reports");
+    a.classList.add("active");
+    
+//charts
+'use strict';
+$(function () {
+    //piechart();
+    sanctionedYears();
+    disbursedYears();
+});
+function sanctionedYears(){
+    var options = {
+        chart: {
+            height: 350,
+            type: 'area',
+        },
+        dataLabels: {
+            enabled: false
+        },
+        stroke: {
+            curve: 'smooth'
+        },
+        series: [{
+            name: 'Sanctioned',
+            data: [{% for i in chart.sanctioned.amount %}{{ i }},{% endfor %}0],                
+        }, {
+            name: 'Disbursed',
+            data: [{% for i in chart.disbursed.amount %}{{ i }},{% endfor %}0],                
+        }],
+
+        xaxis: {
+            categories: [
+            {% for i in chart.sanctioned.years %}
+            "{{ i }}",
+            {% endfor %}"."
+        ],                                
+        },
+        tooltip: {
+            x: {
+                format: 'dd/MM/yy HH:mm'
+            },
+        }
+        
+    }
+
+    var chart = new ApexCharts(
+        document.querySelector("#sanctioned"),
+        options
+    );
+
+    chart.render();
+}
+function disbursedYears(){
+    var options = {
+        chart: {
+            height: 350,
+            type: 'area',
+        },
+        dataLabels: {
+            enabled: false
+        },
+        stroke: {
+            curve: 'smooth'
+        },
+        series: [{
+            name: 'Interest Earned',
+            data: [{% for i in chart.interest.amount %}{{ i }},{% endfor %}0],                
+        }, {
+            name: 'Returned',
+            data: [{% for i in chart.returned.amount %}{{ i }},{% endfor %}0],                
+        }],
+        colors:['#E91E63', '#9C27B0'],
+        xaxis: {
+            categories: [
+            {% for i in chart.sanctioned.years %}
+            "{{ i }}",
+            {% endfor %}"."
+        ],                                
+        },
+        tooltip: {
+            x: {
+                format: 'dd/MM/yy HH:mm'
+            },
+        }
+        
+    }
+
+    var chart = new ApexCharts(
+        document.querySelector("#intrest_and_returned"),
+        options
+    );
+
+    chart.render();
+}
+</script>
+{% endblock js %}

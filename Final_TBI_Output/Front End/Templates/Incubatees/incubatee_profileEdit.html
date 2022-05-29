@@ -1,0 +1,93 @@
+{% extends "body.html" %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block CSS %}
+<link rel="stylesheet" href="{% static 'Front End/CSS/bundles/iziToast.min.css' %}">
+<link rel="stylesheet" href="{% static 'Front End/CSS/bundles/select2.min.css' %}">
+{% endblock CSS %}
+
+{% block title %}
+Incubatees
+{% endblock title %}
+
+{% block content %}
+
+<div class="main-content">
+    <section class="section">     
+    <!-- content -->
+        
+        <div class="section-body">
+          <div class="row clearfix">
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+              <div class="card">
+                <div class="card-header">
+                  <h4>Incubatee Create Form</h4>
+                </div>
+                <div class="card-body">
+                  <form id="wizard_with_validation" method="POST" action="{% url 'editIncubatee' incubateeID=incubateeID %}" enctype="multipart/form-data">
+                      <input type="hidden" name="addIncubatee">
+                    {% csrf_token %}
+                    <h3>Profile Details</h3>
+                    <fieldset class="row">
+                        {% for field in form %}
+                        <div class="col-6">
+                            <div class="form-group">
+                                {{ field|as_crispy_field }}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </fieldset>
+                    <h3>Company Details</h3>
+                    <fieldset class="row">
+                        {% for field in form1 %}
+                        <div class="col-6">
+                            <div class="form-group">
+                                {{ field|as_crispy_field }}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </fieldset>
+                  </form>
+                </div>
+              </div>
+            </div>
+        </div>
+        </div>
+      </section>
+</div>
+{% endblock content %}
+
+{% block js %}
+<script src="{% static 'Front End/JS/bundles/iziToast.min.js' %}"></script>
+<script src="{% static 'Front End/JS/bundles/select2.full.min.js' %}"></script>
+<script src="{% static 'Front End/JS/bundles/jquery.validate.min.js' %}"></script>
+<script src="{% static 'Front End/JS/bundles/jquery.steps.min.js' %}"></script>
+<script src="{% static 'Front End/JS/page/form-wizard.js' %}"></script>
+<script>
+    var a = document.getElementById("incubatees");
+    a.classList.add("active");
+
+        
+    function toast(){
+        {% if toast.0 == 'error' %}
+        iziToast.error({
+            title: 'Deleted!',
+            message: '{{ toast.1 }}',
+            position: 'topRight'
+        });
+        {% elif toast.0 == 'success' %}
+        iziToast.success({
+            title: 'Added!',
+            message: '{{ toast.1 }}',
+            position: 'topRight'
+        });
+        {% endif %}
+        {% if success == "addInstallment" %}
+            document.getElementById("addInstallmentbtn").click();
+        {% elif success == "addProject" %}
+            document.getElementById("addProjectbtn").click();
+        {% endif %}
+    }    
+</script>
+{% endblock js %}

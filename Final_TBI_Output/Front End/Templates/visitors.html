@@ -1,0 +1,240 @@
+{% extends "body.html" %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block CSS %}
+<link rel="stylesheet" href="{% static 'Front End/CSS/bundles/iziToast.min.css' %}">
+<!-- datatables -->
+<link href="https://cdn.datatables.net/1.12.1/css/jquery.dataTables.min.css" rel="stylesheet">
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/dt-1.12.1/b-2.2.3/b-html5-2.2.3/b-print-2.2.3/datatables.min.css"/>
+{% endblock CSS %}
+
+{% block title %}
+Visitors
+{% endblock title %}
+
+{% block content %}
+<!-- Modal -->
+<div class="modal fade" id="visitorModal" tabindex="-1" role="dialog" aria-labelledby="visitorModalTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <form action="{% url 'visitors' %}" method="post">
+                {% csrf_token %}
+                <input type="hidden" name="addVisitor">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="visitorModalTitle">Add Visitors</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body" style="font-size: 17px;">
+                    <div class="row">
+                        {% for field in visitorForm %}
+                            <div class="col-12">
+                                <div class="form-group">
+                                    {{ field|as_crispy_field }}
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="modal-footer bg-whitesmoke br">
+                    <button type="submit" class="btn btn-success">Save</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<!-- Modal -->
+<div class="modal fade" id="visitorImageModal" tabindex="-1" role="dialog" aria-labelledby="visitorImageModalTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <form action="{% url 'visitors' %}" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <input type="hidden" name="addVisitorImage">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="visitorImageModalTitle">Update Visitor Images</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        {% for field in visitorImageForm %}
+                            <div class="col-12">
+                                <div class="form-group">
+                                    {{ field|as_crispy_field }}
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="modal-footer bg-whitesmoke br">
+                    <button type="submit" class="btn btn-primary">Save</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="main-content">
+    <section class="section">
+    <div class="section-header">
+        <div class="col">
+            <h1>Visitors</h1>
+        </div>
+        <div class="col d-flex justify-content-end">
+            <button type="button" class="btn btn-icon icon-left btn-primary" id="visitorbtn" data-toggle="modal" data-target="#visitorModal"><i class="fas fa-plus"></i> Add New Visitor</button>
+            <button type="button" class="btn btn-icon icon-left btn-primary d-none" id="visitorImagebtn" data-toggle="modal" data-target="#visitorImageModal"><i class="fas fa-plus"></i> Update Visitor Images</button>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12 col-sm-12 col-lg-12">
+        <div class="card">
+            <div class="card-header">
+                <h4>Visitors Details</h4>
+            </div>
+            <div class="card-body">
+            <div class="table-responsive table-invoice">
+                <table class="table table-striped text-center" id="exportTable">
+                <thead>
+                    <tr>
+                        <th class="text-center">#</th>
+                        <th class="text-center">Date of visit</th>
+                        <th class="text-center">Visitor Type</th>
+                        <th class="text-center">Organisation/ Institute</th>
+                        <th class="text-center">Name of Person</th>
+                        <th class="text-center">No. of visitors</th>
+                        <th class="text-center">Purpose</th>
+                        <th class="text-center">Images</th>
+                        <th class="text-center">Action</th>
+                    </tr>
+
+                </thead>
+                {% for i in visitors %}
+                <tr style="height:90px !important;">
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ i.date|date:"d-m-Y" }}</td>
+                    <td>
+                        {% if i.type == 'Individual' %}
+                        <div class="badge badge-warning">Individual</div>
+                        {% elif i.type == 'Organization' %}
+                        <div class="badge badge-success">Organisation</div>
+                        {% else %}
+                        <div class="badge badge-danger">Institution</div>
+                        {% endif %}
+                    </td>
+                    <td>{{ i.name }}</td>
+                    <td class="font-weight-600">{{ i.guestName }}</td>                    
+                    <td>{{ i.count }}</td>
+                    <td>{{ i.purpose }}</td>
+                    <td class="text-truncate d-flex justify-content-center">
+                        <ul class="list-unstyled order-list m-b-0 m-b-0">
+                            <div id="aniimated-thumbnials" class="list-unstyled row clearfix">
+                                {% for j in i.images|slice:":2" %}                                
+                                <div class="pl-1">
+                                    <a href="{% static j.photo %}" data-sub-html="">
+                                        <img class="img-responsive thumbnail" src="{% static j.photo %}" height="50">
+                                    </a>
+                                </div>
+                                {% empty %}
+                                <div class="mt-3 ml-3">
+                                    <p class="text-center badge badge-light" >
+                                        <i class="far fa-image"></i> N/A
+                                    </p>
+                                </div>
+                                {% endfor %}
+                                {% if i.images|length > 2 %}
+                                <div class="mt-2" style="margin-left:-20px">
+                                    <div class="rounded-circle bg-dark text-white ml-2">
+                                        <p class="text-center" height="25" style="font-size: 10px;padding: 0px 5px;" >
+                                            +{{ i.images|length|add:"-2" }}
+                                        </p>
+                                    </div>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </ul>
+                    </td>
+                    <td class="noExl">
+                        <button type="button" class="btn btn-warning" id="visitorImagebtn" data-toggle="modal" data-target="#visitorImageModal" onclick="$('#id_visitor option[value={{ i.id }}]').prop('selected','true');" style="border-radius:100px ;"><i class="fas fa-plus"></i></button>
+                    </td>
+                </tr>
+                {% endfor %}
+                </table>
+            </div>
+            </div>
+        </div>
+        </div>
+    </div>
+    </section>  
+</div>
+
+
+
+{% endblock content %}
+
+{% block js %}
+<script src="{% static 'Front End/JS/bundles/iziToast.min.js' %}"></script>
+<script type="text/javascript" src="https://code.jquery.com/jquery-3.5.1.js"></script>
+
+{% include 'datatable.html' %}
+
+<script>
+    $(document).ready( function () {
+        $('#exportTable').DataTable({
+            "searching": false,
+            "info": true,
+            "dom": 'Bfrtip',
+            "buttons": [
+                {
+                    extend: 'copyHtml5',
+                    exportOptions: {
+                        columns: [ 0, 1, 2, 3, 4, 5, 6]
+                        //':visible'
+                    }
+                },
+                {
+                    extend: 'excelHtml5',
+                    exportOptions: {
+                        columns: [ 0, 1, 2, 3, 4, 5, 6 ]
+                    }
+                },
+                {
+                    extend: 'pdfHtml5',
+                    exportOptions: {
+                        columns: [ 0, 1, 2, 3, 4, 5, 6 ]
+                    }
+                },
+                //'colvis'
+            ],
+        });
+    } );
+    var a = document.getElementById("visitors");
+    a.classList.add("active");
+        
+    function toast(){
+        {% if toast.0 == 'error' %}
+        iziToast.error({
+            title: 'Deleted!',
+            message: '{{ toast.1 }}',
+            position: 'topRight'
+        });
+        {% elif toast.0 == 'success' %}
+        iziToast.success({
+            title: 'Added!',
+            message: '{{ toast.1 }}',
+            position: 'topRight'
+        });
+        {% endif %}
+        {% if ErrorForm == 1 %}
+            document.getElementById("visitorbtn").click();
+        {% elif ErrorForm == 2 %}
+            document.getElementById("visitorImagebtn").click();
+        {% endif %}
+    }    
+
+</script>
+{% endblock js %}

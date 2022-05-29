@@ -1,0 +1,43 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta content="width=device-width, initial-scale=1, maximum-scale=1, shrink-to-fit=no" name="viewport">
+        
+        <title>{% block title %}TBI{% endblock title %}</title>
+        
+        <!-- General CSS Files -->
+        <link rel="stylesheet" href="{% static 'Front End/CSS/app.min.css' %}">
+        <link rel="stylesheet" href="{% static 'Front End/CSS/custom.css' %}">
+        <link rel="shortcut icon" type="image/x-icon" href="{% static 'Front End/Images/favicon.ico' %}">
+        <link rel="stylesheet" href="{% static 'Front End/CSS/style.css' %}">
+        <link rel="stylesheet" href="{% static 'Front End/CSS/components.css' %}">
+
+        {% block CSS %}
+        {% endblock CSS %}
+    </head>
+    <body class="light theme-white light-sidebar" onload="toast();">
+
+        {% block loader %}
+        <div class="loader"></div>
+        {% endblock loader %}
+
+        {% block body %}{% endblock body %}
+        
+        <!-- General JS Scripts -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+        <script src="{% static 'Front End/JS/app.min.js' %}"></script>
+        <script src="{% static 'Front End/JS/scripts.js' %}"></script>
+        <script src="{% static 'Front End/JS/custom.js' %}"></script>
+        <script src="{% static 'Front End/JS/table.js' %}"></script>
+        
+        
+        {% block js %}
+        <!-- Page Specific JS File -->
+        <script src="{% static 'Front End/JS/page/index.js' %}"></script>
+        {% endblock js %}
+        
+        
+    </body>
+</html>

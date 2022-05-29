@@ -1,0 +1,431 @@
+{% extends "body.html" %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block CSS %}
+<link rel="stylesheet" href="{% static 'Front End/CSS/bundles/iziToast.min.css' %}">
+
+<!-- datatables -->
+<link href="https://cdn.datatables.net/1.12.1/css/jquery.dataTables.min.css" rel="stylesheet">
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/dt-1.12.1/b-2.2.3/b-html5-2.2.3/b-print-2.2.3/datatables.min.css"/>
+{% endblock CSS %}
+
+{% block title %}
+Events
+{% endblock title %}
+
+{% block content %}
+<!-- Modal -->
+<div class="modal fade" id="eventModal" tabindex="-1" role="dialog" aria-labelledby="eventModalTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <form action="{% url 'events' %}" method="post">
+            {% csrf_token %}
+            <input type="hidden" name="addEvent">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="eventModalTitle">Add Events</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        {% for field in eventForm %}
+                            <div class="col-6">
+                                <div class="form-group">
+                                    {{ field|as_crispy_field }}
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="modal-footer bg-whitesmoke br">
+                    <button type="submit" class="btn btn-primary">Save</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<!-- Modal -->
+<div class="modal fade" id="updateeventModal" tabindex="-1" role="dialog" aria-labelledby="updateeventModalTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <form action="{% url 'events' %}" method="post"  enctype="multipart/form-data">
+                {% csrf_token %}
+                <input type="hidden" name="addEventImage">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="updateeventModalTitle">Upload Event Photos</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    {% for field in eventPhotoForm %}
+                        <div class="col-12">
+                            <div class="form-group">
+                                {{ field|as_crispy_field }}
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+                <div class="modal-footer bg-whitesmoke br">
+                    <button type="submit" class="btn btn-primary">Save</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<!-- Modal -->
+<div class="modal fade" id="updateeventReportModal" tabindex="-1" role="dialog" aria-labelledby="updateeventReportModalTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <form action="{% url 'events' %}" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <input type="hidden" name="addEventReports">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="updateeventReportModalTitle">Upload Event Reports</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    {% for field in eventReportForm %}
+                    <div class="col-12">
+                        <div class="form-group">
+                            {{ field|as_crispy_field }}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                <div class="modal-footer bg-whitesmoke br">
+                    <button type="submit" class="btn btn-primary">Save</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<!-- Modal -->
+<div class="modal fade" id="eventsponserModal" tabindex="-1" role="dialog" aria-labelledby="eventsponserModalTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <form action="{% url 'events' %}" method="post">
+                {% csrf_token %}
+                <input type="hidden" name="addEventSponser">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="eventsponserModalTitle">Add Sponsers</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    {% for field in eventSponserForm %}
+                    <div class="col-12">
+                        <div class="form-group">
+                            {{ field|as_crispy_field }}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                <div class="modal-footer bg-whitesmoke br">
+                    <button type="submit" class="btn btn-primary">Save</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<!-- docview -->
+<div class="modal fade" id="docview" tabindex="-1" role="dialog" aria-labelledby="docviewTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content" style="box-shadow: none;background-color:transparent;">
+            <iframe src="" id="docviewfile" frameborder="0" height=800 width=1200 style="
+            box-shadow: none;
+            background-color: transparent;
+            margin-left: -350px;"></iframe>
+        </div>
+    </div>
+</div>
+
+<div class="main-content">
+    <section class="section">
+    <div class="section-header">
+        <div class="col">
+            <h1>Activities & Events</h1>
+        </div>
+        <div class="col d-flex justify-content-end">
+            <div class="row">
+                <button type="button" class="btn btn-icon icon-left btn-primary mr-3" id="eventsbtn" data-toggle="modal" data-target="#eventModal"><i class="fas fa-plus"></i> Add New Event</button>
+                <div class="btn-group" role="group" aria-label="">
+                <!-- <button type="button" class="btn btn-danger" id="" data-toggle="modal" data-target="#updateeventModal" onclick="$('#id_event option[value={{ i.id }}]').prop('selected','true');"><i class="fas fa-plus ">Image</i></button>
+                    <button type="button" class="btn btn-warning" id="" data-toggle="modal" data-target="#updateeventReportModal" onclick="$('#id_events option[value={{ i.id }}]').prop('selected','true');"><i class="fas fa-plus ">Reports</i> </button> -->
+                    <button type="button" class="btn btn-icon icon-left btn-success" id="eventPhotosbtn" data-toggle="modal" data-target="#updateeventModal"><i class="fas fa-plus"></i> Upload Event Photos</button>
+                    <button type="button" class="btn btn-icon icon-left btn-warning" id="eventFilesbtn" data-toggle="modal" data-target="#updateeventReportModal"><i class="fas fa-plus"></i> Upload Event Reports</button>
+                    <button type="button" class="btn btn-danger" id="eventSponsersbtn" data-toggle="modal" data-target="#eventsponserModal" onclick="$('#id_eventSponser option[value={{ i.id }}]').prop('selected','true');"><i class="fas fa-plus"> Sponsers</i></button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12 col-sm-12 col-lg-12">
+        <div class="card">
+            <div class="card-header">
+            <h4>Event Details</h4>
+            </div>
+            <div class="card-body">
+            <div class="table-responsive table-invoice">
+                <table id="exportTable" class="table table-striped text-center">
+                    <thead>
+                        <!-- <tr class="border-0">
+                            <th class="text-center" colspan="6"></th>
+                            <th class="text-center" colspan="6">No. of Participants</th>
+                            <th class="text-center" colspan="3"></th>
+                        </tr> -->
+                        <tr>
+                            <th class="text-center">#</th>
+                            <th class="text-center">Event Title</th>
+                            <th class="text-center">Start Date</th>
+                            <th class="text-center">End Date</th>
+                            <th class="text-center">Total Days</th>
+                            <th class="text-center">Total Hours</th>
+                            <th class="text-center" colspan="3">
+                                <span class="badge badge-primary"> </span> Participants Within KEC 
+                            </th>
+                            <th class="text-center" colspan="3">
+                                <span class="badge badge-danger"> </span> Participants Outside KEC
+                            </th>
+                            <th class="text-center">Sponsers</th>
+                            <th class="text-center">Reports</th>
+                            <th class="text-center">Images</th>
+                        </tr>
+                    </thead>
+                {% for i in events %}
+                <tr height="85px">
+                    <td>{{ forloop.counter }}</td>
+                    <td class="font-weight-600" width="20%">{{ i.title }}</td>                    
+                    <td width="10%">{{ i.fromdate|date:'d-m-Y' }}</td>
+                    <td width="10%">{{ i.todate|date:'d-m-Y' }}</td>
+                    <td width="5%">{{ i.days }} days</td>
+                    <td width="5%">{{ i.hours }} hrs</td>
+                    <td>
+                        <span class="badge badge-primary" data-toggle="tooltip" data-original-title="Students">{{ i.inKECstudents }}</span>
+                    </td>
+                    <td>
+                        <span class="badge badge-primary" data-toggle="tooltip" data-original-title="Staffs">{{ i.inKECstaffs }}</span>
+                    </td>
+                    <td>
+                        <span class="badge badge-primary" data-toggle="tooltip" data-original-title="Organisations">{{ i.inKECOrganizaions }}</span>
+                    </td>
+                    <td>
+                        <span class="badge badge-danger" data-toggle="tooltip" data-original-title="Students">{{ i.outstudents }}</span>
+                    </td>
+                    <td>
+                        <span class="badge badge-danger" data-toggle="tooltip" data-original-title="Staffs">{{ i.outstaffs }}</span>
+                    </td>
+                    <td>
+                        <span class="badge badge-danger" data-toggle="tooltip" data-original-title="Organisations">{{ i.outOrganizaions }}</span>
+                    </td>
+                    <td>
+                        {% for j in i.sponsers %}
+                        <div class="">
+                            {{ forloop.counter }}. {{ j.name }}  <span class="text-center badge badge-light" >
+                               <i class="fas fa-rupee-sign"></i> {{ j.amount }}
+                            </span>
+                        </div>
+                        {% empty %}
+                        <div class="">
+                            <span class="text-center badge badge-light" >
+                               <i class="fas fa-money-check-alt">N/A</i>  
+                            </span>
+                        </div>
+                        {% endfor %}
+                    </td>
+                    <td>
+                        {% for j in i.reports|slice:":1" %}
+                        
+                        {% if j.file.url|slice:"-3:" == "pdf"  %}
+                        <button type="button" class="btn btn-primary btn-icon icon-left" data-toggle="modal" data-target="#docview" onclick="document.getElementById('docviewfile').src = '{% static j.file.url %}';">
+                            <i class="fas fa-eye"></i> View 
+                        </button>
+                        {% else %}
+                        <a href="{% static j.file.url %}" download="{% static j.file.url %}" class="btn btn-primary btn-icon icon-left"><i class="fas fa-download"></i> Download {{ j.file.url|slice:"-4:" }}</a>
+                        {% endif %}
+                        {% empty %}
+                        <div class="">
+                            <span class="text-center badge badge-light" >
+                                <i class="fas fa-file-pdf">N/A</i> 
+                            </span>
+                        </div>
+                        {% endfor %}
+                    </td>
+                    <td class="text-truncate d-flex justify-content-center">
+                        <div class="d-flex list-unstyled order-list">
+                            <div id="" class="list-unstyled row clearfix p-1 pl-2">
+                                {% for j in i.images|slice:":1" %}                                
+                                <div class="d-flex align-items-center p-1">
+                                    <a href="{% static j.photo %}" data-sub-html="">
+                                        <img class="img-responsive thumbnail" src="{% static j.photo %}" height="50" width="50">
+                                    </a>
+                                </div>
+                                {% empty %}
+                                <div class="d-flex align-items-center mt-3">
+                                    <span class="text-center badge badge-light" >
+                                        <i class="far fa-image">N/A</i> 
+                                    </span>
+                                </div>
+                                {% endfor %}
+                                {% if i.images|length > 1 %}
+                                <div class="mt-2" style="margin-left:-20px">
+                                    <div class="rounded-circle bg-dark text-white ml-2">
+                                        <p class="text-center" height="25" style="font-size: 10px;padding: 0px 5px;" >
+                                            +{{ i.images|length|add:"-1" }}
+                                        </p>
+                                    </div>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </td>
+                    <!-- <td>
+                        <div class="btn-group" role="group" aria-label="">
+                            <button type="button" class="btn btn-danger" id="" data-toggle="modal" data-target="#updateeventModal" onclick="$('#id_event option[value={{ i.id }}]').prop('selected','true');"><i class="fas fa-plus ">Image</i></button>
+                            <button type="button" class="btn btn-warning" id="" data-toggle="modal" data-target="#updateeventReportModal" onclick="$('#id_events option[value={{ i.id }}]').prop('selected','true');"><i class="fas fa-plus ">Reports</i> </button>
+                            <button type="button" class="btn btn-success" id="eventSponsersbtn" data-toggle="modal" data-target="#eventsponserModal" onclick="$('#id_eventSponser option[value={{ i.id }}]').prop('selected','true');"><i class="fas fa-plus">Sponsers</i></button>
+                        </div>
+                    </td> -->
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan=9 class="text-center">No Events in the database</td>
+                </tr>
+                {% endfor %}
+                </table>
+            </div>
+            </div>
+        </div>
+        </div>
+    </div>
+    </section>  
+</div>
+
+
+
+{% endblock content %}
+
+{% block js %}
+<script src="{% static 'Front End/JS/bundles/iziToast.min.js' %}"></script>
+{% include 'datatable.html' %}
+
+<script>
+    $(document).ready( function () {
+        $('#exportTable').DataTable({
+            "searching": false,
+            "info": true,
+            "dom": 'Bfrtip',
+            "buttons": [
+                {
+                    extend: 'copyHtml5',
+                    exportOptions: {
+                        columns: [ 0, 1, 2, 3, 4, 5, 6,7,8,9,10,11],
+                        modifier: {
+                            page: 'all'
+                        },
+                        format: {
+                            header: function ( data, columnIdx ) {
+                                if(columnIdx==6){
+                                    return 'Students Within KEC';
+                                }
+                                else if(columnIdx==9){
+                                    return 'Students Outside KEC';
+                                }
+                                else if(columnIdx==7){
+                                    return 'Staffs Within KEC';
+                                }
+                                else if(columnIdx==10){
+                                    return 'Staffs Outside KEC';
+                                }
+                                else if(columnIdx==8){
+                                    return 'Organisations Within KEC';
+                                }
+                                else if(columnIdx==11){
+                                    return 'Organisations Outside KEC';
+                                }
+                                else{
+                                    return data;
+                                }
+                            }
+                        }
+                        //':visible'
+                    }
+                },
+                {
+                    extend: 'excelHtml5',
+                    exportOptions: {
+                        columns: [ 0, 1, 2, 3, 4, 5, 6,7,8,9,10,11 ],
+                        modifier: {
+                            page: 'all'
+                        },
+                        format: {
+                            header: function ( data, columnIdx ) {
+                                if(columnIdx==6){
+                                    return 'Students Within KEC';
+                                }
+                                else if(columnIdx==9){
+                                    return 'Students Outside KEC';
+                                }
+                                else if(columnIdx==7){
+                                    return 'Staffs Within KEC';
+                                }
+                                else if(columnIdx==10){
+                                    return 'Staffs Outside KEC';
+                                }
+                                else if(columnIdx==8){
+                                    return 'Organisations Within KEC';
+                                }
+                                else if(columnIdx==11){
+                                    return 'Organisations Outside KEC';
+                                }
+                                else{
+                                    return data;
+                                }
+                            }
+                        }
+                    }
+                },
+                //'colvis'
+            ],
+        });
+    } );
+
+    var a = document.getElementById("events");
+    a.classList.add("active");
+
+    function toast(){
+        {% if toast.0 == 'error' %}
+        iziToast.error({
+            title: 'Deleted!',
+            message: '{{ toast.1 }}',
+            position: 'topRight'
+        });
+        {% elif toast.0 == 'success' %}
+        iziToast.success({
+            title: 'Added!',
+            message: '{{ toast.1 }}',
+            position: 'topRight'
+        });
+        {% endif %}
+        
+        {% if ErrorForm == 1 %}
+            document.getElementById("eventsbtn").click();
+        {% elif ErrorForm == 2 %}
+            document.getElementById("eventPhotosbtn").click();
+        {% elif ErrorForm == 3 %}
+            document.getElementById("eventFilesbtn").click();
+        {% elif ErrorForm == 4 %}
+            document.getElementById("eventSponsersbtn").click();
+        {% endif %}
+    }
+</script>
+{% endblock js %}

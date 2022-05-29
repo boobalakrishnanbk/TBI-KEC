@@ -1,0 +1,356 @@
+{% extends "body.html" %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block CSS %}
+
+{% endblock CSS %}
+{% block title %}
+Report
+{% endblock title %}
+
+{% block content %}
+<div class="main-content">
+    <section class="section">
+        <div class="section-header">
+            <div class="col">
+                <h1>Report</h1>
+            </div>
+        </div>
+<!-- chart -->
+        <div class="row">
+            <!-- 2 -->
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 col-12 d-none">
+                <div class="card">
+                    <div class="card-header">
+                        <h4>Cusomize your Report</h4>
+                    </div>
+                    <div class="card-body">
+                        <form action="" class="row" method="post">
+                            <div class="col-4">
+                                <div class="form-group">
+                                    <div id="" class="form-group">
+                                        <label for="id_from_date" class=" requiredField">
+                                            From Date<span class="asteriskField">*</span>
+                                        </label>
+                                        <div class="">
+                                            <input type="date" name="fromDate" class="dateinput form-control" required="" id="id_from_date">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="form-group">
+                                    <div id="" class="form-group">
+                                        <label for="id_to_date" class=" requiredField">
+                                            To Date<span class="asteriskField">*</span>
+                                        </label>
+                                        <div class="">
+                                            <input type="date" name="toDate" class="dateinput form-control" required="" id="id_to_date">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-1">
+                                <div class="form-group">
+                                    <div id="" class="form-group">
+                                        <div class="">
+                                            <input type="submit" value="Fetch" class="btn btn-primary m-t-35">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12 col-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h4>Sanctioned Amount Status</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="recent-report__chart">
+                        <div id="sanctioned"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12 col-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h4>Disbursed Amount Status</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="recent-report__chart">
+                        <div id="disbursed"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--  -->
+            <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12 col-4">
+                <div class="card">
+                  <div class="card-header">
+                    <h4>Project Status</h4>
+                  </div>
+                  <div class="card-body">
+                    <div class="recent-report__chart">
+                      <div id="piechart"></div>
+                    </div>
+                  </div>
+                </div>
+            </div>
+        </div>
+<!-- content -->
+        <div class="row">
+            <div class="col-12 col-sm-12 col-lg-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h4>Incubatee Report</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive table-invoice">
+                            <table class="table table-striped text-center">
+                                <thead>
+                                    <tr>
+                                        <th>Year</th>
+                                        <th>Category</th>
+                                        <th>Incubatees</th>
+                                        <th>Project Status</th>
+                                        <th>Sanctioned Amount</th>
+                                        <th>Disbursed Amount</th>
+                                    </tr>
+                                </thead>
+                                {% for i in report %}
+                                <tr class="p-2">
+                                    <td>{{ i.financialYear }}</td>
+                                    <td class="p-1">
+                                        <b>
+                                            <div class="d-flex justify-content-center">
+                                                <ul class="list-group">
+                                                    {% for j in i.community %}
+                                                    <li class="list-group-item p-0 pl-3 pr-3">
+                                                        <p class="">
+                                                            <span class="float-left">
+                                                                {{ j.community }}
+                                                            </span>
+                                                            <span class="float-right ml-5">
+                                                                {{ j.communities }}
+                                                            </span>
+                                                        </p>
+                                                    </li>
+                                                    {% empty %}
+                                                </ul>
+                                                <p>No Incubatee Available</p>
+                                                {% endfor %}
+                                            </div>
+                                        </b>
+                                    </td>
+                                    <td class="text-center">{{ i.total }}</td>
+                                    <td>
+                                        {% for j in i.status  %}
+                        {% if j.status == 'In Progress' %}
+                                        <div class="col-12 col-md-12 m-2">
+                                            <div class=" badge badge-secondary">{{ j.statuses }} {{ j.status }}</div>
+                                        </div>
+                                        {% elif j.status == 'Completed' %}
+                                        <div class="col-12 col-md-12 m-2">
+                                            <div class=" badge badge-success">{{ j.statuses }} {{ j.status }}</div>
+                                        </div>
+                                        {% else %}
+                                        <div class="col-12 col-md-12 m-2">
+                                            <div class=" badge badge-danger">{{ j.statuses }} {{ j.status }}</div>
+                                        </div>
+                                        {% endif %}
+                        {% empty %}
+                                        <p>No Incubatees..</p>
+                                        {% endfor %}
+                                    </td>
+                                    <td class="">₹ {{ i.sanctionedAmt }}</td>
+                                    <td class="">₹ {{ i.disbursed }}</td>
+                                </tr>
+                                {% endfor %}
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+{% endblock content %}
+
+{% block js %}
+<script src="{% static 'Front End/JS/bundles/chart.min.js' %}"></script>
+<script src="{% static 'Front End/JS/bundles/apexcharts.min.js' %}"></script>
+<script>
+    var a = document.getElementById("incubateeReport");
+    a.classList.add("active");
+    var a = document.getElementById("reports");
+    a.classList.add("active");
+
+//charts
+'use strict';
+$(function () {
+    piechart();
+    sanctioned();
+    disbursed();
+});
+
+function piechart(){
+	var options = {
+            chart: {
+                height: 350,
+                type: 'donut',
+                toolbar:{
+                    show: true,
+                }
+            },
+            colors:['#008ffb', '#ff4560', '#9C27B0'],
+            plotOptions: {
+                pie: {
+                    horizontal: false,
+                    columnWidth: '55%',
+                    donut: {
+                        labels:{
+                            show: true,
+                        }
+                    },
+                },
+            },
+            dataLabels:{
+                enabled:true,
+                formatter:function(val,opts){
+                    return opts.w.config.series[opts.seriesIndex]
+                },
+            },
+            labels: ['Completed', 'Discontinued','In Progress'],
+            series: {{ charts.projectStatus }},
+            responsive: [{
+                options: {
+                    legend: {
+                        position: 'top'
+                    }
+                }
+            }]
+        }
+
+        var chart = new ApexCharts(
+            document.querySelector("#piechart"),
+            options
+        );
+
+        chart.render();
+}
+function sanctioned(){
+    var options = {
+           chart: {
+               height: 350,
+               type: 'area',
+           },
+
+           fill: {
+            colors: ['#5EE497', '#E91E63', '#9C27B0']
+            },
+            markers: {
+                colors: ['#5EE497']
+            },
+           colors:['#5EE497'],
+           xaxis:{
+                floating: true,
+                axisBorder:{
+                    show: true,
+                    height: 1,
+                }
+           },
+           dataLabels: {
+               enabled: false
+           },
+
+           stroke: {
+               curve: 'smooth'
+           },
+           series: [{
+               name: 'Sanctioned',
+               data: {{ charts.sanctioned }},
+           }],
+           xaxis: {
+                type: 'datetime',
+                categories: [
+                    {% for i in charts.years %}
+                    "{{ i }}",
+                    {% endfor %}
+                ],                
+           },
+           tooltip: {
+            x: {
+                format: 'dd/MM/yy HH:mm'
+            },
+            y: {
+                formatter: undefined,
+                title : {
+                    formatter: function(value){
+                        return value
+                    },
+                }
+            },
+        }
+       }
+
+       var chart = new ApexCharts(
+           document.querySelector("#sanctioned"),
+           options
+       );
+
+       chart.render();
+}
+function disbursed(){
+    var options = {
+           chart: {
+               height: 350,
+               type: 'area',
+           },
+           xaxis:{
+                floating: true,
+                axisBorder:{
+                    show: true,
+                    height: 1,
+                }
+           },
+           dataLabels: {
+               enabled: false
+           },
+           stroke: {
+               curve: 'smooth'
+           },
+           series: [{
+               name: 'Sanctioned',
+               data: {{ charts.disbursed }},
+           }],
+           xaxis: {
+                type: 'datetime',
+                categories: [
+                    {% for i in charts.years1 %}
+                    "{{ i }}",
+                    {% endfor %}
+                ],                
+           },
+           tooltip: {
+            x: {
+                format: 'dd/MM/yy HH:mm'
+            },
+        }
+       }
+
+       var chart = new ApexCharts(
+           document.querySelector("#disbursed"),
+           options
+       );
+
+       chart.render();
+}
+
+</script>
+{% endblock js %}

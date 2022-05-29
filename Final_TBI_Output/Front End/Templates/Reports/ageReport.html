@@ -1,0 +1,341 @@
+{% extends "body.html" %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block CSS %}
+{% endblock CSS %}
+
+{% block title %}
+Report
+{% endblock title %}
+
+{% block content %}
+<div class="main-content">
+    <section class="section">
+    <div class="section-header">
+        <div class="col">
+            <h1>Report</h1>
+        </div>
+    </div>
+    <div class="row">
+        <!-- Customize -->
+        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4>Cusomize your Report</h4>
+                </div>
+                <div class="card-body">
+                    <form action="{% url 'reportAge' %}" class="row" method="post">
+                        {% csrf_token %}
+
+                        <div class="col-3">
+                            <div class="form-group">
+                                <div id="" class="form-group">
+                                    <label for="id_startAge" class=" requiredField">
+                                        Age From<span class="asteriskField">*</span>
+                                    </label>
+                                    <div class="">
+                                        <input type="number" name="startAge" class="form-control" required="" id="id_startAge" value="{{ from }}">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-3">
+                            <div class="form-group">
+                                <div id="" class="form-group">
+                                    <label for="id_endAge" class=" requiredField">
+                                        Age To<span class="asteriskField">*</span>
+                                    </label>
+                                    <div class="">
+                                        <input type="number" name="toAge" class="form-control" required id="id_endAge" value="{{ to }}">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-3">
+                            <div class="form-group">
+                                <div id="" class="form-group">
+                                    <label for="id_step" class=" requiredField">
+                                        Difference Between Ages<span class="asteriskField">*</span>
+                                    </label>
+                                    <div class="">
+                                        <input type="number" name="step" class="form-control" required id="id_step" value="{{ step }}">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-1">
+                            <div class="form-group">
+                                <div id="" class="form-group">
+                                    <div class="">
+                                        <input type="submit" value="Fetch" class="btn btn-primary m-t-35">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- chart -->
+
+        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4>Overall Age Analysis</h4>
+                </div>
+                <div class="card-body">
+                    <div class="recent-report__chart">
+                    <div id="age_overall"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4>Individual Age Analysis</h4>
+                </div>
+                <div class="card-body">
+                    <div class="recent-report__chart">
+                    <div id="age_individual"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- data -->
+        <div class="col-12 col-sm-12 col-lg-12">
+        <div class="card">
+            <div class="card-header">
+            <h4>Age Report</h4>
+            </div>
+            <div class="card-body">
+            <div class="table-responsive table-invoice">
+                <table class="table table-striped text-center">
+                    <thead>
+                        <tr>
+                            <th>Year</th>
+                            <th>Incubatees</th>
+                            <th>Incubatee Age</th>
+                        </tr>
+                    </thead>
+                {% for i in report %}
+                <tr>
+                    <td>{{ i.financialYear }}</td>
+                    <td class="text-center">{{ i.total }}</td>
+                    <td class="pt-2 pb-2">
+                        {% for keys,j in i.agerange.items %}
+                        {% if j != 0  %}
+                        <div class="d-flex justify-content-center">
+                            <ul class="list-group">
+                                <li class="list-group-item p-1">
+                                    <span class="col text-end">
+                                        {{ keys }}
+                                    </span>
+                                    <span class="col text-start">
+                                        {{ j }}
+                                    </span>
+                                </li>
+                            </ul>
+                        </div>
+                        {% endif %}
+                        {% empty %}
+                        <div>No Incubatee Available</div>
+                        {% endfor %}
+                    </td>
+                    
+                </tr>
+                {% endfor %}
+                </table>
+            </div>
+            </div>
+        </div>
+        </div>
+    </div>
+    </section>  
+</div>
+
+
+
+{% endblock content %}
+
+{% block js %}
+
+<script src="{% static 'Front End/JS/bundles/chart.min.js' %}"></script>
+<script src="{% static 'Front End/JS/bundles/apexcharts.min.js' %}"></script>
+<script>
+    var a = document.getElementById("ageReport");
+    a.classList.add("active");
+    var a = document.getElementById("reports");
+    a.classList.add("active");
+//charts
+'use strict';
+$(function () {
+    //piechart();
+    ageRangeOverall();
+    ageRangeIndividual();
+});
+function ageRangeOverall(){
+    var options = {
+        chart: {
+            height: 350,
+            type: 'bar',
+        },
+        plotOptions: {
+            bar: {
+                horizontal: false,
+                columnWidth: '55%',
+            },
+        },
+        dataLabels: {
+            enabled: false
+        },
+        stroke: {
+            show: true,
+            width: 2,
+            colors: ['transparent']
+        },
+        series: [{
+            name: 'No. of Incubatees',
+            data: [{% for keys,j in range.items %}"{{ j }}",{% endfor %}]
+        }],
+        xaxis: {
+            categories: [{% for keys,j in range.items %}"{{ keys }}",{% endfor %}],
+            title: {
+                text: 'Age Range'
+            }
+        },
+        yaxis: {
+            title: {
+                text: 'No. of Incubatees'
+            }
+        },
+        fill: {
+            opacity: 1
+
+        },
+        tooltip: {
+            y: {
+                formatter: function (val) {
+                    return val
+                }
+            }
+        }
+    }
+
+    var chart = new ApexCharts(
+        document.querySelector("#age_overall"),
+        options
+    );
+
+    chart.render();
+  
+
+}
+function ageRangeIndividual(){
+    var options = {
+        chart: {
+            height: 350,
+            type: 'bar',
+        },
+        plotOptions: {
+            bar: {
+                horizontal: false,
+                columnWidth: '55%',
+            },
+        },
+        dataLabels: {
+            enabled: false
+        },
+        stroke: {
+            show: true,
+            width: 2,
+            colors: ['transparent']
+        },
+        series: [{
+            name: 'Age',
+            data: [{% for keys,j in age_range_individual.items %}{{keys}},{% endfor %}]
+        }],
+        xaxis: {
+            categories: [{% for keys,j in age_range_individual.items %}{{j}},{% endfor %}],
+            title: {
+                text: 'Incubatees Count'
+            }
+        },
+        yaxis: {
+            title: {
+                text: 'Age'
+            }
+        },
+        fill: {
+            opacity: 1
+
+        },
+        tooltip: {
+            y: {
+                formatter: function (val) {
+                    return val
+                }
+            }
+        }
+    }
+
+    var chart = new ApexCharts(
+        document.querySelector("#age_individual"),
+        options
+    );
+
+    chart.render();
+  
+
+}
+function piechart(){
+	var options = {
+            chart: {
+                height: 350,
+                type: 'bar',
+                toolbar:{
+                    show: true,
+                }
+            },
+            colors:['#008ffb', '#ff4560', '#9C27B0'],
+            plotOptions: {
+                pie: {
+                    horizontal: false,
+                    columnWidth: '55%',
+                    donut: {
+                        labels:{
+                            show: true,
+                        }
+                    },
+                },
+            },
+            dataLabels:{
+                enabled:true,
+                formatter:function(val,opts){
+                    return opts.w.config.series[opts.seriesIndex]
+                },
+            },
+            labels: [{% for keys,j in range.items %}"{{ keys }}",{% endfor %}],
+            series: [{% for keys,j in range.items %}"{{ j }}",{% endfor %}],
+            responsive: [{
+                options: {
+                    legend: {
+                        position: 'top'
+                    }
+                }
+            }]
+        }
+
+        var chart = new ApexCharts(
+            document.querySelector("#ageoverall"),
+            options
+        );
+
+        chart.render();
+}
+</script>
+{% endblock js %}

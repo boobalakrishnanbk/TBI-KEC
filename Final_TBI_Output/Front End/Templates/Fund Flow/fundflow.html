@@ -1,0 +1,163 @@
+{% extends "body.html" %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block CSS %}
+<link rel="stylesheet" href="{% static 'Front End/CSS/bundles/iziToast.min.css' %}">
+{% endblock CSS %}
+
+{% block title %}
+Fund Flow
+{% endblock title %}
+
+{% block content %}
+<!-- Modal -->
+<div class="modal fade" id="fundflowModal" tabindex="-1" role="dialog" aria-labelledby="fundflowModalTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <form action="{% url 'fundflow' %}" method="post">
+                {% csrf_token %}
+                <div class="modal-header">
+                    <h5 class="modal-title" id="fundflowModalTitle">Add Fund</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        {% for field in fundLogForm %}
+                            <div class="col-12">
+                                <div class="form-group">
+                                    {{ field|as_crispy_field }}
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="modal-footer bg-whitesmoke br">
+                    <button type="submit" class="btn btn-primary">Save</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="main-content">
+    <section class="section">
+    <div class="section-header">
+        <div class="col">
+            <h1>Fund Flow</h1>
+        </div>
+        <div class="col d-flex justify-content-end">
+            <button type="button" class="btn btn-icon icon-left btn-primary" id="fundaddbtn" data-toggle="modal" data-target="#fundflowModal"><i class="fas fa-plus"></i> Add Fund</button>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12 col-sm-12 col-lg-12">
+        <div class="card">
+            <div class="card-header">
+                <h5>Fund Flow As on date</h5>
+                <div class="col d-flex justify-content-end">
+                    <h6 class="mt-2">Disbursement Analysis </h6><p class="btn btn-success ml-3" style="border-radius: 5px;cursor:default;"><i class="fa fa-arrow-up"></i></p>  
+                    <p class="btn btn-warning ml-3 mr-3" style="border-radius: 5px;cursor:default;"><i class="fa fa-arrow-down"></i></p> <h6 class="mt-2"> Utilization Analysis </h6> 
+                </div>
+            </div>
+            <div class="card-body">
+            <div class="table-responsive text-right table-invoice">
+                <table class="table table-striped">
+                <tr>
+                    <th>#</th>
+                    <th class="text-center">Scheme Name</th>
+                    <th class="text-center">No. of Incubatees</th>
+                    <th>Total Sanctioned</th>
+                    <th>Total Disbursed</th>
+                    <th>Total Utilized</th>
+                    <th>Total Returned</th>
+                    <th>Interest Earned</th>
+                    <th>Total Balance</th>
+                    <th>Last Update On</th>
+                    <th class="text-left">Analysis</th>
+                </tr>
+                {% for i in schemes %}
+                  
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td class="text-center"><a href="{% url 'scheme' name=i.schemeName pagination=1 %}">{{ i.schemeName }}</a></td>
+                    <td class="text-center">{{ i.incubatees }}</td>
+                    <td>
+                        <div class="badge badge-info">₹ {{ i.amount }}</div>
+                    </td>
+                    <td class="text-dark">₹ {{ i.disbursed }}</td>
+                    <td class="text-dark">₹ {{ i.utilized }}</td>
+                    <td class="text-dark">₹ {{ i.returned }}</td>
+                    <td class="text-dark">₹ {{ i.interest }}</td>
+                    <td>
+                        <div class="badge badge-primary">₹ {{ i.balance }}</div>
+                    </td>
+                    <td>
+                        {% if i.lastUpdate == "" %}
+                        No Recent Actions
+                        {% else %}
+                        <div class="badge badge-secondary">{{ i.lastUpdate }}</div>
+                        {% endif %}
+                    </td>                    
+                    <td class="text-left">
+                        <span>
+                            {% if i.disbursed != "0" %}
+                            <a class="btn btn-success" href="{% url 'disbursement_Analysis' name=i.schemeName pagination=1 %}"><i class="fa fa-arrow-up"></i> </a>
+                            {% endif %}
+                        </span>
+                        <span>
+                            {% if i.utilized != "0" %}
+                            <a class="btn btn-warning" href="{% url 'utilization_Analysis' name=i.schemeName pagination=1 %}"><i class="fa fa-arrow-down"></i></a>
+                            {% endif %}
+                        </span>
+                    </td>                    
+                </tr>
+                {% empty %}
+                <tr><td colspan=11>
+                    {% include 'empty.html' %}
+                </td></tr>
+                {% endfor %}
+            </table>
+        </div>
+            </div>
+        </div>
+        </div>
+    </div>
+    </section>  
+</div>
+
+
+
+{% endblock content %}
+
+{% block js %}
+<script src="{% static 'Front End/JS/bundles/iziToast.min.js' %}"></script>
+<script>
+    var a = document.getElementById("fundflow");
+    a.classList.add("active");
+
+
+    function toast(){
+        {% if toast.0 == 'error' %}
+        iziToast.error({
+            title: 'Deleted!',
+            message: '{{ toast.1 }}',
+            position: 'topRight'
+        });
+        {% elif toast.0 == 'success' %}
+        iziToast.success({
+            title: 'Added!',
+            message: '{{ toast.1 }}',
+            position: 'topRight'
+        });
+        {% endif %}
+        
+        {% if ErrorForm == 1 %}
+            document.getElementById("fundaddbtn").click();
+        {% endif %}
+    }  
+</script>
+{% endblock js %}

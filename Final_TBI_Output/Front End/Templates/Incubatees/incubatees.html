@@ -1,0 +1,379 @@
+{% extends "body.html" %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block CSS %}
+<link rel="stylesheet" href="{% static 'Front End/CSS/bundles/iziToast.min.css' %}">
+<link rel="stylesheet" href="{% static 'Front End/CSS/bundles/select2.min.css' %}">
+<style>
+
+</style>
+{% endblock CSS %}
+
+{% block title %}
+Incubatees
+{% endblock title %}
+
+{% block content %}
+<!-- content -->
+<div class="main-content">
+    <section class="section">
+        <div class="section-header">
+            <div class="col">
+                <h1>Incubatees</h1>
+            </div>
+            <div class="col d-flex justify-content-end">
+                <button class="btn btn-icon icon-left btn-primary" type="button" data-toggle="collapse"
+                data-target="#addIncubatee" aria-expanded="false" aria-controls="addIncubatee">
+                <i class="fas fa-plus"></i> Add new Incubatee
+                </button>
+            </div>
+        </div>
+        {% if success %}
+        <div class="">
+            <div class="alert alert-success">
+                Incubatee was Created successfully.
+            </div>
+        </div>
+        {% endif %}
+        <div class="collapse {% if Error%} show{% endif %}" id="addIncubatee">
+            <div class="row clearfix">
+                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                  <div class="card">
+                    <div class="card-header">
+                      <h4>Incubatee Create Form</h4>
+                    </div>
+                    <div class="card-body">
+                      <form id="wizard_with_validation" method="POST" action="{% url 'incubatees' pagination=active_page %}" enctype="multipart/form-data">
+                          <input type="hidden" name="addIncubatee">
+                        {% csrf_token %}
+                        <h3>Profile Details</h3>
+                        <fieldset class="row">
+                            {% for field in incubateeForm %}
+                            <div class="col-6">
+                                <div class="form-group">
+                                    {{ field|as_crispy_field }}
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </fieldset>
+                        <h3>Company Details</h3>
+                        <fieldset class="row">
+                            {% for field in companyForm %}
+                            <div class="col-6">
+                                <div class="form-group">
+                                    {{ field|as_crispy_field }}
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </fieldset>
+                        <h3>Project Details</h3>
+                        <fieldset class="row">
+                            {% for field in projectForm %}
+                            <div class="col-6">
+                                <div class="form-group">
+                                    {{ field|as_crispy_field }}
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </fieldset>
+                      </form>
+                    </div>
+                  </div>
+                </div>
+            </div>
+        </div>
+        
+
+        <div class="row">
+            <div class="col-12 col-sm-12 col-lg-12">
+            <div class="card">
+                <div class="card-header">
+                <h4>Incubatee Details</h4>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <form action="{% url 'incubatees' pagination=1 %}" method="post" class="col-12 col-sm-12 col-lg-12 row">                    
+                            {% csrf_token %}
+                            <div class="form-group col-4 col-sm-12 col-lg-4 mb-3">
+                                <label>Select Financial Year</label>
+                                <select class="select2 form-control" id="financialYears" name="financialYears" multiple="multiple" placeholder="Select a Financial Year" onchange="this.form.submit()">
+                                    {% for financial_year in financialYears %}
+                                    <option value="{{ financial_year }}" {% if financial_year not in active_financialYears %} selected {% endif %}>{{ financial_year }}</option>
+                                    {% endfor %}    
+                                </select>
+                            </div>
+                            <div class="col-"></div>
+                            <div class=" ml-4 form-group  col-4 col-sm-12 col-lg-4 mb-3">
+                                <label>Select Scheme</label>
+                                <select class="select2 form-control" id="scheme" name="schemes" multiple="multiple" placeholder="Select a Financial Year" onchange="this.form.submit()">
+                                    {% for scheme in schemes %}
+                                    <option value='{{ scheme }}' {% if scheme not in active_schemes %} selected {% endif %}>{{ scheme }}</option>
+                                    {% endfor %}    
+                                </select>
+                            </div>
+                        </form>
+                        <div class="col-12 col-sm-12 col-lg-12">
+                            <div class="table-responsive table-invoice">
+                                <table class="table table-striped">
+                                    <thead>
+                                        <tr class="text-center">
+                                            <th class="col-1">#</th>
+                                            <th class="col-1">Profile</th>
+                                            <th class="col-2">Name</th>
+                                            <th class="col-2">Company Name</th>
+                                            <th class="col-2">No. of Schemes</th>
+                                            <th class="col-2">No. of Projects</th>
+                                            <th class="col-1">Status</th>
+                                            <th class="col-1">Last Update</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <div id="accordion">
+                                        {% for i in incubatees %}
+                                        <tr>
+                                            <td colspan=8>
+                                                <div class="accordion">
+                                                    <div class="accordion-header" role="button" data-toggle="collapse" data-target="#i{{ forloop.counter}}" style="background-color: transparent;">
+                                                        <div class="col-12 text-center row d-flex justify-content-center align-items-center m-0 p-0" >
+                                                            <div class="col-1">{{ forloop.counter }}</div>
+                                                            <div class="col-1">
+                                                                <figure class="avatar avatar-xl mt-2 mb-2">
+                                                                    <img src="{% static i.profile %}" >
+                                                                </figure>
+                                                            </div>
+                                                            <div class="col-2"><a href="{% url 'incubatee' incubateeID=i.incubatee_ID page='company' %}">{{ i.name }}</a></div>
+                                                            <div class="col-2">{{ i.company.0.company_name }}</div>
+                                                            <div class="col-2">
+                                                                <div class="badge badge-primary">{{ i.schemes }}</div>
+                                                            </div>
+                                                            <div class="col-2">
+                                                                <div class="badge badge-primary">{{ i.project|length }}</div>
+                                                            </div>
+                                                            <div class="font-weight-600 col-1 ">
+                                                                {% if i.company.0.graduationType == "Live" %}
+                                                                <div class="badge badge-success">{{ i.company.0.graduationType }}</div>
+                                                                {% else %}
+                                                                <div class="badge badge-danger">{{ i.company.0.graduationType }}</div>
+                                                                {% endif %}
+                                                            </div>                    
+                                                            <div class="col-1  text-right">{{ i.last_update }}</div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="accordion-body collapse" id="i{{ forloop.counter}}" data-parent="#accordion">
+                                                        <div class="row m-0 p-1">
+                                                            <div class="card-body col-3">
+                                                                <h4>Personal</h4>
+                                                                <div class="py-4">
+                                                                  <p class="clearfix">
+                                                                    <span class="float-left">
+                                                                      Birthday
+                                                                    </span>
+                                                                    <span class="float-right text-muted">
+                                                                      {{ i.dob }}
+                                                                    </span>
+                                                                  </p>
+                                                                  <p class="clearfix">
+                                                                    <span class="float-left">
+                                                                      Phone
+                                                                    </span>
+                                                                    <span class="float-right text-muted">
+                                                                      {{ i.mobile }}
+                                                                    </span>
+                                                                  </p>
+                                                                  <p class="clearfix">
+                                                                    <span class="float-left">
+                                                                      Mail
+                                                                    </span>
+                                                                    <span class="float-right text-muted">
+                                                                      {{ i.mail }}
+                                                                    </span>
+                                                                  </p>
+                                                                  <p class="clearfix">
+                                                                    <span class="float-left">
+                                                                      Location
+                                                                    </span>
+                                                                    <span class="float-right text-muted">
+                                                                      {{ i.city }},{{ i.state }}
+                                                                    </span>
+                                                                  </p>
+                                                                  <p class="clearfix">
+                                                                    <span class="float-left">
+                                                                      An Alumini?
+                                                                    </span>
+                                                                    <span class="float-right text-muted">
+                                                                      {% if i.alumini == "" %}No{% else %}Yes, {{ i.alumini }}{% endif %}
+                                                                    </span>
+                                                                  </p>
+                                                                </div>
+                                                            </div>
+                                                            <div class="card-body col-3">
+                                                                <h4>Company
+                                                                    <span class="float-right text-muted">
+                                                                        <figure class="avatar avatar-md">
+                                                                            <img src="{% static i.company.0.logo %}" >
+                                                                        </figure>
+                                                                    </span>
+                                                                </h4>
+                                                                <div class="py-4">
+                                                                  <p class="clearfix">
+                                                                    <span class="float-left">
+                                                                      Is Registered?
+                                                                    </span>
+                                                                    <span class="float-right text-muted">
+                                                                      {% if i.company.0.company_status == "Unregister" %}No {% else %}Yes{% endif %}
+                                                                    </span>
+                                                                  </p>
+                                                                  <p class="clearfix">
+                                                                    <span class="float-left">
+                                                                      Is Startup Formed?
+                                                                    </span>
+                                                                    <span class="float-right text-muted">
+                                                                      {{ i.company.0.startupFormed }}
+                                                                    </span>
+                                                                </p>
+                                                                <p class="clearfix">
+                                                                    <span class="float-left">
+                                                                        Next Renewal Date
+                                                                    </span>
+                                                                    <span class="float-right text-muted">
+                                                                        {{ i.company.0.renewalDate }}
+                                                                    </span>
+                                                                </p>
+                                                                <p class="clearfix">
+                                                                    <span class="float-left">
+                                                                        Entity
+                                                                    </span>
+                                                                    <span class="float-right text-muted">
+                                                                        {{ i.company.0.entityDetails }}
+                                                                    </span>
+                                                                  </p>
+                                                                </div>
+                                                            </div>
+                                                            <div class="card-body col-3">
+                                                                <h4>Schemes</h4>
+                                                                <div class="py-4">
+                                                                    {% for j in i.project %}
+                                                                    <p class="clearfix">
+                                                                        <span class="float-left">
+                                                                            Financial Year
+                                                                        </span>
+                                                                        <span class="float-right text-muted">
+                                                                            {{ j.financialYear_id }}
+                                                                        </span>
+                                                                    </p>
+                                                                    <p class="clearfix border-bottom">
+                                                                        <span class="float-left font-weight-600">
+                                                                            {{ j.scheme_id }}
+                                                                        </span>
+                                                                        <span class="float-right text-muted mb-2">
+                                                                            ₹ {{ j.amount }}
+                                                                        </span>
+                                                                    </p>
+                                                                    {% endfor %}
+                                                                </div>
+                                                            </div>
+                                                            <div class="card-body col-3">
+                                                                <h4>Project</h4>
+                                                                <div class="py-4">
+                                                                    {% for j in i.project %}
+
+                                                                    <p class="clearfix">
+                                                                        <span class="float-left">
+                                                                        Title
+                                                                        </span>
+                                                                        <span class="float-right text-muted">
+                                                                        {{ j.title }}
+                                                                        </span>
+                                                                    </p>
+                                                                    <p class="clearfix border-bottom">
+                                                                        <span class="float-left">
+                                                                        Status
+                                                                        </span>
+                                                                        <span class="float-right text-muted">
+                                                                            
+                                                                            <span class=" mb-2 badge badge-{% if j.status == 'In Progress' %}primary{% elif j.status == 'Completed' %}success{% else %}danger{% endif %}">
+                                                                                {{ j.status }}
+                                                                            </span>
+                                                                        </span>
+                                                                    </p>
+                                                                    {% endfor %}
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>                                  
+                                        {% empty %}
+                                        <tr>
+                                            <td colspan=8>
+                                                {% include 'empty.html' %}
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                        </div>
+                                    </tbody>
+                                </table>
+                                <tfoot class="text-right">
+                                    <nav class="d-flex justify-content-end col-12">
+                                      <ul class="pagination mb-0">
+                                        <li class="page-item {% if active_page == 1 %} disabled {% endif %}">
+                                            <a class="page-link" href="{% url 'incubatees' pagination=active_page|add:-1 %}" tabindex="-1"><i class="fas fa-chevron-left"></i></a>
+                                        </li>
+                                        {% for i in pagination_list %}
+                                        <li class="page-item {% if active_page == i %} active {% endif %}">
+                                            <a class="page-link" href="{% url 'incubatees' pagination=i %}">{{ i }} <span class="sr-only">(current)</span></a>
+                                        </li>
+                                        {% endfor %}
+                                        <li class="page-item {% if pagination_list|length == active_page %} disabled {% endif %} ">
+                                            <a class="page-link" href="{% url 'incubatees' pagination=active_page|add:1 %}"><i class="fas fa-chevron-right"></i></a>
+                                        </li>
+                                      </ul>
+                                    </nav>
+                                </tfoot>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            </div>
+        </div>
+    </section>  
+</div>
+{% endblock content %}
+
+{% block js %}
+<script src="{% static 'Front End/JS/bundles/iziToast.min.js' %}"></script>
+<script src="{% static 'Front End/JS/bundles/select2.full.min.js' %}"></script>
+<script src="{% static 'Front End/JS/bundles/jquery.validate.min.js' %}"></script>
+<script src="{% static 'Front End/JS/bundles/jquery.steps.min.js' %}"></script>
+<script src="{% static 'Front End/JS/page/form-wizard.js' %}"></script>
+  
+<script>
+    var a = document.getElementById("incubatees");
+    a.classList.add("active");
+
+        
+    function toast(){
+        {% if toast.0 == 'error' %}
+        iziToast.error({
+            title: 'Deleted!',
+            message: '{{ toast.1 }}',
+            position: 'topRight'
+        });
+        {% elif toast.0 == 'success' %}
+        iziToast.success({
+            title: 'Added!',
+            message: '{{ toast.1 }}',
+            position: 'topRight'
+        });
+        {% endif %}
+        {% if ErrorForm == 1 %}
+            document.getElementById("visitorbtn").click();
+        {% elif ErrorForm == 2 %}
+            document.getElementById("visitorImagebtn").click();
+        {% endif %}
+    }    
+</script>
+{% endblock js %}

@@ -1,0 +1,126 @@
+{% extends "body.html" %}
+{% load static %}
+
+{% block CSS %}
+<link href="{% static 'Front End/CSS/bundles/lightgallery.css' %}" rel="stylesheet">
+{% endblock CSS %}
+
+{% block title %}
+Events
+{% endblock title %}
+
+{% block content %}
+
+<div class="main-content">
+    <section class="section">
+      <div class="section-header">
+        <h1>Files</h1>
+        <div class="section-header-breadcrumb">
+          <div class="breadcrumb-item active"><a href="#">TBI</a></div>
+          <!-- <div class="breadcrumb-item"><a href="#">Email</a></div> -->
+          <div class="breadcrumb-item">Visitors</div>
+        </div>
+      </div>
+      <div class="section-body">
+        <div class="row">
+          <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2">
+            <div class="card">
+              <div class="body">
+                <div id="mail-nav">
+                  <ul class="mt-3" id="mail-folders">
+                    <li >
+                      <a href="{% url 'galleryVisitors' %}" title="Visitors">Visitors</a>
+                    </li>
+                    <li>
+                      <a href="{% url 'galleryEvents' %}" title="Events">Events</a>
+                    </li>
+                    <li>
+                      <a href="{% url 'galleryIncubatees' %}" title="Incubatee Pictures">Incubatee Pictures</a>
+                    </li>
+                    <li class="active">
+                      <a href="{% url 'galleryCompanyLogo' %}" title="Company Logo">Company Logo</a>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-xs-12 col-sm-12 col-md-10 col-lg-10" >
+            <div class="card">
+              <div class="card-body">
+                <ul class="nav nav-pills mb-3" id="myTab3" role="tablist">
+                  <li class="nav-item">
+                    <a class="nav-link active" id="Images-tab3" data-toggle="tab" href="#Images3" role="tab"
+                      aria-controls="Images" aria-selected="true">Images</a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" id="PDF-tab3" data-toggle="tab" href="#PDF3" role="tab"
+                      aria-controls="PDF" aria-selected="false">PDF</a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" id="Others-tab3" data-toggle="tab" href="#Others3" role="tab"
+                      aria-controls="Others" aria-selected="false">Others</a>
+                  </li>
+                </ul>
+                <div class="tab-content" id="myTabContent2">
+                  <div class="tab-pane fade show active" id="Images3" role="tabpanel" aria-labelledby="Images-tab3">
+                    <h3 class="mb-4">Images</h3>
+                    <div id="aniimated-thumbnials" class="list-unstyled row clearfix">
+                      {% for i in images %}
+                      <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
+                        <a href="{{ i.0 }}" data-sub-html="{{ i.1 }}">
+                          <img class="img-responsive thumbnail" src="{{ i.0 }}" alt="">
+                        </a>
+                        <p>{{ i.1 }}</p>
+                      </div>
+                      {% empty %}
+                      {% include 'empty.html' %}
+                      {% endfor %}
+                    </div>
+                  </div>
+                  <div class="tab-pane fade" id="PDF3" role="tabpanel" aria-labelledby="PDF-tab3">
+                    <h3 class="mb-4">PDF</h3>
+                    <div class="row">
+                      {% for i in pdf %}
+                      <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12 mt-3">
+                        <iframe src="{{ i.0 }}" class="border" frameborder="0"  style="height:400px;"></iframe>
+                        <p>{{ i.1 }}</p>
+                      </div>
+                      {% empty %}
+                      {% include 'empty.html' %}
+                      {% endfor %}
+                    </div>
+                  </div>
+                  <div class="tab-pane fade" id="Others3" role="tabpanel" aria-labelledby="Others-tab3">
+                    <h3 class="mb-4">Other Files</h3>
+                    <div class="row">
+                      {% for i in files %}
+                      <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
+                        <p>{{ i.1 }}</p>
+                        <a href="{{ i.0 }}" download="{{ i.0 }}" class="btn btn-primary btn-icon icon-left"><i class="fas fa-download"></i> Download {{ i.0|slice:"-4:" }}</a>
+                      </div>
+                      {% empty %}
+                      {% include 'empty.html' %}
+                      {% endfor %}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+{% endblock content %}
+
+{% block js %}
+
+<script src="{% static 'Front End/JS/bundles/lightgallery-all.js' %}"></script>
+<script src="{% static 'Front End/JS/page/light-gallery.js' %}"></script>
+<script>
+    var a = document.getElementById("gallery");
+    a.classList.add("active");
+</script>
+{% endblock js %}

@@ -1,0 +1,305 @@
+{% extends "body.html" %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block CSS %}
+<link rel="stylesheet" href="{% static 'Front End/CSS/bundles/iziToast.min.css' %}">
+{% endblock CSS %}
+
+{% block title %}
+Settings
+{% endblock title %}
+
+{% block content %}
+<!-- Modal -->
+<div class="modal fade show" id="schemeModal" tabindex="-1" role="dialog" aria-labelledby="schemeModalTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <form action="{% url 'settings' %}" method="post">
+                {% csrf_token %}
+                <input type="hidden" name="addScheme">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="schemeModalTitle">Add Scheme</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body" style="font-size: 17px;">
+                    <div class="row">
+                        {% for field in SchemeForm %}
+                            <div class="col-12">
+                                <div class="form-group">
+                                    {{ field|as_crispy_field }}
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="modal-footer bg-whitesmoke br">
+                    <button type="submit" class="btn btn-primary">Save</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<!-- Modal2 -->
+<div class="modal fade " id="fundtypeModal" tabindex="-1" role="dialog" aria-labelledby="fundtypeModalTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <form action="{% url 'settings' %}" method="post">
+                {% csrf_token %}
+                <input type="hidden" name="addFundType">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="fundtypeModalTitle">Add Fund Type</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        {% for field in fundtypeForm %}
+                            <div class="col-12">
+                                <div class="form-group">
+                                    {{ field|as_crispy_field }}
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="modal-footer bg-whitesmoke br">
+                    <button type="submit" class="btn btn-primary">Save</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<!-- Modal3 -->
+<div class="modal fade" id="entityModal" tabindex="-1" role="dialog" aria-labelledby="entityModalTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <form action="{% url 'settings' %}" method="post">
+                {% csrf_token %}
+                <input type="hidden" name="addEntity">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="entityModalTitle">Add Entity</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        {% for field in EntityForm %}
+                            <div class="col-12">
+                                <div class="form-group">
+                                    {{ field|as_crispy_field }}
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="modal-footer bg-whitesmoke br">
+                    <button type="submit" class="btn btn-primary">Save</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- main -->
+<div class="main-content row">
+    <!-- scheme -->
+    <div class="col-12 col-md-4 col-lg-4">
+        <section class="section">
+            <div class="section-header">
+                <div class="col">
+                    <h1>Schemes</h1>
+                </div>
+                <div class="col d-flex justify-content-end">
+                    <button type="button" class="btn btn-icon icon-left btn-primary" id="schemebtn" data-toggle="modal" data-target="#schemeModal"><i class="fas fa-plus"></i> Add New Scheme</button>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12 col-sm-12 col-lg-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h4>Schemes Status</h4>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive table-invoice">
+                                <table class="table table-striped">
+                                <tr>
+                                    <th>#</th>
+                                    <th>Scheme Name</th>
+                                    <th>Balance</th>
+                                    <th>Status</th>
+                                </tr>
+                                {% for i in Scheme %}
+                                <tr>
+                                    <td>{{ forloop.counter }}</td>
+                                    <td>{{ i.schemeName }}</td>
+                                    <td>₹ {{ i.amount }}</td>
+                                    <td>
+                                        <form action="{% url 'settings' %}" method="post">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="toggleScheme" value="{{ i.schemeName }}">
+                                            {% if i.status %}
+                                                <button type="submit" class="btn btn-success badge badge-success">Active</button>
+                                                {% else %}
+                                                <button type="submit" class="btn btn-danger badge badge-danger">Inactive</button>
+                                            {% endif %}
+                                        </form>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan=4 class="text-center">No Schemes Available</td>
+                                </tr>
+                                {% endfor %}
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>  
+    </div>
+    <!-- fund type -->
+    <div class="col-12 col-md-4 col-lg-4">
+        <section class="section">
+            <div class="section-header">
+                <div class="col">
+                    <h1>Fund Type</h1>
+                </div>
+                <div class="col d-flex justify-content-end">
+                    <button type="button" class="btn btn-icon icon-left btn-primary" id="fundtypebtn" data-toggle="modal" data-target="#fundtypeModal"><i class="fas fa-plus"></i> Add New Fund Type</button>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12 col-sm-12 col-lg-12">
+                <div class="card">
+                    <div class="card-header">
+                    <h4>Fund Types</h4>
+                    </div>
+                    <div class="card-body">
+                    <div class="table-responsive table-invoice">
+                        <table class="table table-striped">
+                        <tr>
+                            <th>#</th>
+                            <th>Fund Type</th>
+                            <th>Action</th>
+                        </tr>
+                        {% for i in FundType %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ i.fundType }}</td>
+                            <td>
+                                <form action="{%  url 'settings' %}" method="post">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="deleteFundType" value="{{ i.fundType }}">
+                                <button type="submit" class="btn btn-danger fas fa-trash"></button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan=3 class="text-center">No Fund Type Added.</td>
+                        </tr>
+                        {% endfor %}
+                        </table>
+                    </div>
+                    </div>
+                </div>
+                </div>
+            </div>
+        </section>  
+    </div>
+    <!-- entity -->
+    <div class="col-12 col-md-4 col-lg-4">
+        <section class="section">
+            <div class="section-header">
+                <div class="col">
+                    <h1>Entities</h1>
+                </div>
+                <div class="col d-flex justify-content-end">
+                    <button type="button" class="btn btn-icon icon-left btn-primary"id="entitybtn" data-toggle="modal" data-target="#entityModal"><i class="fas fa-plus"></i> Add New Entity</button>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12 col-sm-12 col-lg-12">
+                <div class="card">
+                    <div class="card-header">
+                    <h4>Entity</h4>
+                    </div>
+                    <div class="card-body">
+                    <div class="table-responsive table-invoice">
+                        <table class="table table-striped">
+                        <tr>
+                            <th>#</th>
+                            <th>Entity</th>
+                            <th>Action</th>
+                        </tr>
+                        {% for i in Entities %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ i.entityName }}</td>
+                            <td>
+                                <form action="{% url 'settings' %}" method="post">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="deleteEntity" value="{{ i.entityName }}">
+                                    <button type="submit" class="btn btn-danger fas fa-trash"></button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan=3 class="text-center">No Entity Added.</td>
+                        </tr>
+                        {% endfor %}
+                        </table>
+                    </div>
+                    </div>
+                </div>
+                </div>
+            </div>
+        </section>  
+    </div>
+</div>
+
+{% endblock content %}
+
+{% block js %}
+<script src="{% static 'Front End/JS/bundles/iziToast.min.js' %}"></script>
+<script>
+    var a = document.getElementById("settings");
+    a.classList.add("active");
+    
+    function toast(){
+        {% if toast.0 == 'error' %}
+        iziToast.error({
+            title: 'Deleted!',
+            message: '{{ toast.1 }}',
+            position: 'topRight'
+        });
+        {% elif toast.0 == 'success' %}
+        iziToast.success({
+            title: 'Added!',
+            message: '{{ toast.1 }}',
+            position: 'topRight'
+        });
+        {% endif %}
+        {% if ErrorForm == 1 %}
+            document.getElementById("schemebtn").click();
+        {% elif ErrorForm == 2 %}
+            document.getElementById("fundtypebtn").click();
+        {% elif ErrorForm == 3 %}
+            document.getElementById("entitybtn").click();
+        {% endif %}
+    }    
+
+</script>
+
+
+{% endblock js %}

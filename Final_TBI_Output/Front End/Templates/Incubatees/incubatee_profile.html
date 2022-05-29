@@ -1,0 +1,1376 @@
+{% extends "body.html" %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block CSS %}
+<link rel="stylesheet" href="{% static 'Front End/CSS/bundles/iziToast.min.css' %}">
+<link rel="stylesheet" href="{% static 'Front End/CSS/bundles/select2.min.css' %}">
+{% endblock CSS %}
+
+{% block title %}
+Incubatees
+{% endblock title %}
+
+{% block content %}
+
+<!-- Modal -->
+<div class="modal fade" id="addInstallmentModal" tabindex="-1" role="dialog" aria-labelledby="addInstallmentModalTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+          <form action="{% url 'addInstallment' incubateeID=incubateeID project_ID=projectID %}" method="post" enctype="multipart/form-data" id="addInstallmentForm">
+              {% csrf_token %}
+              <input type="hidden" name="addInstallment">
+              <div class="modal-header">
+                  <h5 class="modal-title" id="addInstallmentModalTitle">Add Installment</h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                  </button>
+              </div>
+              <div class="modal-body">
+                  {% for field in installmentForm %}
+                  <div class="col-12">
+                      <div class="form-group">
+                          {{ field|as_crispy_field }}
+                      </div>
+                  </div>
+                  {% endfor %}
+              </div>
+              <div class="modal-footer bg-whitesmoke br">
+                  <button type="submit" class="btn btn-primary">Save</button>
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+              </div>
+          </form>
+      </div>
+  </div>
+</div>
+<!-- Modal Patent -->
+<div class="modal fade" id="addPatentModal" tabindex="-1" role="dialog" aria-labelledby="addPatentModalTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+          <form action="{% url 'addPatent' incubateeID=incubateeID project_ID=projectID %}" method="post" enctype="multipart/form-data" id="addPatentForm">
+              {% csrf_token %}
+              <input type="hidden" name="addPatent">
+              <div class="modal-header">
+                  <h5 class="modal-title" id="addPatentModalTitle">Add Patent</h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                  </button>
+              </div>
+              <div class="modal-body">
+                  {% for field in patentForm %}
+                  <div class="col-12">
+                      <div class="form-group">
+                          {{ field|as_crispy_field }}
+                      </div>
+                  </div>
+                  {% endfor %}
+              </div>
+              <div class="modal-footer bg-whitesmoke br">
+                  <button type="submit" class="btn btn-primary">Save</button>
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+              </div>
+          </form>
+      </div>
+  </div>
+</div>
+<!-- Modal Copyright -->
+<div class="modal fade" id="addCopyrightModal" tabindex="-1" role="dialog" aria-labelledby="addCopyrightModalTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+          <form action="{% url 'addCopyright' incubateeID=incubateeID project_ID=projectID %}" method="post" enctype="multipart/form-data" id="addCopyrightForm">
+              {% csrf_token %}
+              <input type="hidden" name="addCopyright">
+              <div class="modal-header">
+                  <h5 class="modal-title" id="addCopyrightModalTitle">Add Copyright</h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                  </button>
+              </div>
+              <div class="modal-body">
+                  {% for field in copyrightForm %}
+                  <div class="col-12">
+                      <div class="form-group">
+                          {{ field|as_crispy_field }}
+                      </div>
+                  </div>
+                  {% endfor %}
+              </div>
+              <div class="modal-footer bg-whitesmoke br">
+                  <button type="submit" class="btn btn-primary">Save</button>
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+              </div>
+          </form>
+      </div>
+  </div>
+</div>
+<!-- Modal Trademark -->
+<div class="modal fade" id="addTrademarkModal" tabindex="-1" role="dialog" aria-labelledby="addTrademarkModalTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+          <form action="{% url 'addTrademark' incubateeID=incubateeID project_ID=projectID %}" method="post" enctype="multipart/form-data" id="addTrademarkForm">
+              {% csrf_token %}
+              <input type="hidden" name="addTrademark">
+              <div class="modal-header">
+                  <h5 class="modal-title" id="addTrademarkModalTitle">Add Trademark</h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                  </button>
+              </div>
+              <div class="modal-body">
+                  {% for field in trademarkForm %}
+                  <div class="col-12">
+                      <div class="form-group">
+                          {{ field|as_crispy_field }}
+                      </div>
+                  </div>
+                  {% endfor %}
+              </div>
+              <div class="modal-footer bg-whitesmoke br">
+                  <button type="submit" class="btn btn-primary">Save</button>
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+              </div>
+          </form>
+      </div>
+  </div>
+</div>
+<!-- Modal Project -->
+<div class="modal fade" id="addProjectModal" tabindex="-1" role="dialog" aria-labelledby="addProjectModalTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+      <div class="modal-content">
+          <form action="{% url 'addProject' incubateeID=incubateeID  %}" method="post" enctype="multipart/form-data" id="addProjectForm">
+              {% csrf_token %}
+              <input type="hidden" name="addProject">
+              <div class="modal-header">
+                  <h5 class="modal-title" id="addProjectModalTitle">Add Project</h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                  </button>
+              </div>
+              <div class="modal-body">
+                <div class="row">
+                  {% for field in projectForm %}
+                  <div class="col-6">
+                      <div class="form-group">
+                          {{ field|as_crispy_field }}
+                      </div>
+                  </div>
+                  {% endfor %}
+                </div>
+              </div>
+              <div class="modal-footer bg-whitesmoke br">
+                  <button type="submit" class="btn btn-primary">Save</button>
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+              </div>
+          </form>
+      </div>
+  </div>
+</div>
+<!-- docview -->
+<div class="modal fade" id="docview" tabindex="-1" role="dialog" aria-labelledby="docviewTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content" style="box-shadow: none;background-color:transparent;">
+          <iframe src="" id="docviewfile" frameborder="0" height=800 width=1200 style="
+          box-shadow: none;
+          background-color: transparent;
+          margin-left: -350px;"></iframe>
+      </div>
+  </div>
+</div>
+<!-- Revenue -->
+<div class="modal fade" id="addRevenueModal" tabindex="-1" role="dialog" aria-labelledby="addRevenueModalTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+          <form action="{% url 'addRevenue' incubateeID=incubateeID project_ID=projectID %}" method="post" enctype="multipart/form-data" id="addRevenueForm">
+              {% csrf_token %}
+              <input type="hidden" name="addRevenue">
+              <div class="modal-header">
+                  <h5 class="modal-title" id="addRevenueModalTitle">Add Revenue</h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                  </button>
+              </div>
+              <div class="modal-body">
+                  {% for field in revenueForm %}
+                  <div class="col-12">
+                      <div class="form-group">
+                          {{ field|as_crispy_field }}
+                      </div>
+                  </div>
+                  {% endfor %}
+              </div>
+              <div class="modal-footer bg-whitesmoke br">
+                  <button type="submit" class="btn btn-primary">Save</button>
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+              </div>
+          </form>
+      </div>
+  </div>
+</div>
+<!-- Employment -->
+<div class="modal fade" id="addEmploymentModal" tabindex="-1" role="dialog" aria-labelledby="addEmploymentModalTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+          <form action="{% url 'addEmployment' incubateeID=incubateeID project_ID=projectID %}" method="post" enctype="multipart/form-data" id="addEmploymentForm">
+              {% csrf_token %}
+              <input type="hidden" name="addEmployment">
+              <div class="modal-header">
+                  <h5 class="modal-title" id="addEmploymentModalTitle">Add Employment</h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                  </button>
+              </div>
+              <div class="modal-body">
+                  {% for field in employmentForm %}
+                  <div class="col-12">
+                      <div class="form-group">
+                          {{ field|as_crispy_field }}
+                      </div>
+                  </div>
+                  {% endfor %}
+              </div>
+              <div class="modal-footer bg-whitesmoke br">
+                  <button type="submit" class="btn btn-primary">Save</button>
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+              </div>
+          </form>
+      </div>
+  </div>
+</div>
+<!-- Awards -->
+<div class="modal fade" id="addAwardsModal" tabindex="-1" role="dialog" aria-labelledby="addAwardsModalTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+          <form action="{% url 'addAwards' incubateeID=incubateeID project_ID=projectID %}" method="post" enctype="multipart/form-data" id="addAwardsForm">
+              {% csrf_token %}
+              <input type="hidden" name="addAwards">
+              <div class="modal-header">
+                  <h5 class="modal-title" id="addAwardsModalTitle">Add Awards</h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                  </button>
+              </div>
+              <div class="modal-body">
+                  {% for field in awardsForm %}
+                  <div class="col-12">
+                      <div class="form-group">
+                          {{ field|as_crispy_field }}
+                      </div>
+                  </div>
+                  {% endfor %}
+              </div>
+              <div class="modal-footer bg-whitesmoke br">
+                  <button type="submit" class="btn btn-primary">Save</button>
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+              </div>
+          </form>
+      </div>
+  </div>
+</div>
+<!-- Intern -->
+<div class="modal fade" id="addInternModal" tabindex="-1" role="dialog" aria-labelledby="addInternModalTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+      <div class="modal-content">
+          <form action="{% url 'addIntern' incubateeID=incubateeID project_ID=projectID %}" method="post" enctype="multipart/form-data" id="addInternForm">
+              {% csrf_token %}
+              <input type="hidden" name="addIntern">
+              <div class="modal-header">
+                  <h5 class="modal-title" id="addInternModalTitle">Add Intern</h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                  </button>
+              </div>
+              <div class="modal-body">
+                <div class="row">
+                  {% for field in internForm %}
+                  <div class="col-6">
+                      <div class="form-group">
+                          {{ field|as_crispy_field }}
+                      </div>
+                  </div>
+                  {% endfor %}
+                </div>
+              </div>
+              <div class="modal-footer bg-whitesmoke br">
+                  <button type="submit" class="btn btn-primary">Save</button>
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+              </div>
+          </form>
+      </div>
+  </div>
+</div>
+<!-- Product -->
+<div class="modal fade" id="addProductModal" tabindex="-1" role="dialog" aria-labelledby="addProductModalTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+      <div class="modal-content">
+          <form action="{% url 'addProduct' incubateeID=incubateeID project_ID=projectID %}" method="post" enctype="multipart/form-data" id="addProductForm">
+              {% csrf_token %}
+              <input type="hidden" name="addProduct">
+              <div class="modal-header">
+                  <h5 class="modal-title" id="addProductModalTitle">Add Product</h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                  </button>
+              </div>
+              <div class="modal-body">
+                <div class="row">
+                  {% for field in productForm %}
+                  <div class="col-6">
+                      <div class="form-group">
+                          {{ field|as_crispy_field }}
+                      </div>
+                  </div>
+                  {% endfor %}
+                </div>
+              </div>
+              <div class="modal-footer bg-whitesmoke br">
+                  <button type="submit" class="btn btn-primary">Save</button>
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+              </div>
+          </form>
+      </div>
+  </div>
+</div>
+
+
+
+<div class="main-content">
+    <section class="section">     
+    <!-- content -->
+        <div class="section-header">
+          <h1>Incubatee</h1>
+          <div class="section-header-breadcrumb">
+            <div class="breadcrumb-item active"><a href="{% url 'home' %}">Home</a></div>
+            <div class="breadcrumb-item"><a href="{% url 'incubatees' pagination=1 %}">Incubatee</a></div>
+            <div class="breadcrumb-item">{{ incubatee.name }}</div>
+          </div>
+        </div>
+        <div class="section-body">
+          <div class="row mt-sm-4">
+            <div class="col-12 col-md-12 col-lg-3">
+              <div class="card author-box">
+                <div class="card-body">
+                  <div class="author-box-center">
+                    <img alt="image" src="{% static incubatee.profile %}" class="rounded-circle author-box-picture">
+                    <div class="clearfix"></div>
+                    <div class="author-box-name">
+                      <a href="#">{{ incubatee.name }}</a><a href="{% url 'editIncubatee' incubateeID=incubateeID %}"><i class="fas fa-edit"></i></a>
+                    <div class="author-box-job">{{ incubatee.gender }}</div>
+                    </div>
+                  </div>
+                  <div class="text-center">
+                    <div class="author-box-description">
+                      <div class="py-4">
+                        <p class="clearfix">
+                          <span class="float-left">
+                            Birthday
+                          </span>
+                          <span class="float-right text-muted">
+                            {{ incubatee.dob }}
+                          </span>
+                        </p>
+                        <p class="clearfix">
+                          <span class="float-left">
+                            Phone
+                          </span>
+                          <span class="float-right text-muted">
+                            {{ incubatee.mobile }}
+                          </span>
+                        </p>
+                        <p class="clearfix">
+                          <span class="float-left">
+                            Mail
+                          </span>
+                          <span class="float-right text-muted">
+                            {{ incubatee.mail }}
+                          </span>
+                        </p>
+                        <p class="clearfix">
+                          <span class="float-left">
+                            Location
+                          </span>
+                          <span class="float-right text-muted">
+                            {{ incubatee.city }}, {{ incubatee.state }}
+                          </span>
+                        </p>
+                        <p class="clearfix">
+                          <span class="float-left">
+                            An Alumini?
+                          </span>
+                          <span class="float-right text-muted">
+                            {% if incubatee.alumini == None %}No{% else %}Yes, {{ incubatee.alumini }}{% endif %}
+                          </span>
+                        </p>
+                        <p class="clearfix">
+                          <span class="float-left">
+                            Community
+                          </span>
+                          <span class="float-right text-muted">
+                            {{ incubatee.community }}
+                          </span>
+                        </p>
+                        <p class="clearfix">
+                          <span class="float-left">
+                            Aadhaar
+                          </span>
+                          <span class="float-right text-muted">
+                            {{ incubatee.aadhaar }}
+                          </span>
+                        </p>
+                      </div>
+                    </div>
+                    <!-- <div class="mb-2 mt-3">
+                      <div class="text-small font-weight-bold">Follow Hasan On</div>
+                    </div>
+                    <a href="#" class="btn btn-social-icon mr-1 btn-facebook">
+                      <i class="fab fa-facebook-f"></i>
+                    </a>
+                    <a href="#" class="btn btn-social-icon mr-1 btn-twitter">
+                      <i class="fab fa-twitter"></i>
+                    </a>
+                    <a href="#" class="btn btn-social-icon mr-1 btn-github">
+                      <i class="fab fa-github"></i>
+                    </a>
+                    <a href="#" class="btn btn-social-icon mr-1 btn-instagram">
+                      <i class="fab fa-instagram"></i>
+                    </a> -->
+                    <!-- <div class="w-100 d-sm-none"></div> -->
+                  </div>
+                </div>
+              </div>
+              <!-- <div class="card">
+                <div class="card-header">
+                  <h4>Personal Details</h4>
+                </div>
+                <div class="card-body">
+                  <div class="py-4">
+                    <p class="clearfix">
+                      <span class="float-left">
+                        Birthday
+                      </span>
+                      <span class="float-right text-muted">
+                        30-05-1998
+                      </span>
+                    </p>
+                    <p class="clearfix">
+                      <span class="float-left">
+                        Phone
+                      </span>
+                      <span class="float-right text-muted">
+                        (0123)123456789
+                      </span>
+                    </p>
+                    <p class="clearfix">
+                      <span class="float-left">
+                        Mail
+                      </span>
+                      <span class="float-right text-muted">
+                        test@example.com
+                      </span>
+                    </p>
+                    <p class="clearfix">
+                      <span class="float-left">
+                        Facebook
+                      </span>
+                      <span class="float-right text-muted">
+                        <a href="#">John Deo</a>
+                      </span>
+                    </p>
+                    <p class="clearfix">
+                      <span class="float-left">
+                        Twitter
+                      </span>
+                      <span class="float-right text-muted">
+                        <a href="#">@johndeo</a>
+                      </span>
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div class="card">
+                <div class="card-header">
+                  <h4>Skills</h4>
+                </div>
+                <div class="card-body">
+                  <ul class="list-unstyled user-progress list-unstyled-border list-unstyled-noborder">
+                    <li class="media">
+                      <div class="media-body">
+                        <div class="media-title">Java</div>
+                      </div>
+                      <div class="media-progressbar p-t-10">
+                        <div class="progress" data-height="6">
+                          <div class="progress-bar bg-primary" data-width="70%"></div>
+                        </div>
+                      </div>
+                    </li>
+                    <li class="media">
+                      <div class="media-body">
+                        <div class="media-title">Web Design</div>
+                      </div>
+                      <div class="media-progressbar p-t-10">
+                        <div class="progress" data-height="6">
+                          <div class="progress-bar bg-warning" data-width="80%"></div>
+                        </div>
+                      </div>
+                    </li>
+                    <li class="media">
+                      <div class="media-body">
+                        <div class="media-title">Photoshop</div>
+                      </div>
+                      <div class="media-progressbar p-t-10">
+                        <div class="progress" data-height="6">
+                          <div class="progress-bar bg-green" data-width="48%"></div>
+                        </div>
+                      </div>
+                    </li>
+                  </ul>
+                </div>
+              </div> -->
+            </div>
+            <div class="col-12 col-md-12 col-lg-9">
+                <div class="card">
+                    <div class="card-body">
+                      <ul class="nav nav-pills" id="myTab2" role="tablist" style="font-size: 16px;">
+                        <li class="nav-item">
+                          <a class="nav-link {% if page == 'company' %}active{% endif %}" id="home-tab2" data-toggle="tab" href="#company" role="tab"
+                            aria-controls="home" aria-selected="true">Company</a>
+                        </li>
+                        <li class="nav-item">
+                          <a class="nav-link {% if page == 'team' %}active{% endif %}" id="profile-tab2" data-toggle="tab" href="#team" role="tab"
+                            aria-controls="profile" aria-selected="false">Team Members</a>
+                        </li>
+                        <li class="nav-item">
+                          <a class="nav-link {% if page == 'project' %}active{% endif %}" id="contact-tab2" data-toggle="tab" href="#project" role="tab"
+                            aria-controls="contact" aria-selected="false">Project</a>
+                        </li>
+                      </ul>
+                      <div class="tab-content " id="myTab3Content">
+                        <!-- Company -->
+                        <div class="tab-pane fade {% if page == 'company' %}show active{% endif %}" id="company" role="tabpanel" aria-labelledby="home-tab2">
+                          <div class="row">
+                            <div class="col-md-4 col-6">
+                              <strong>Company Name</strong>
+                              <br>
+                              <p class="text-muted">{{ company.company_name }}</p>
+                            </div>
+                            <div class="col-md-4 col-6">
+                              <strong>Location</strong>
+                              <br>
+                              <p class="text-muted">{% if company.address_state != None %}{{ company.address_state }}, {% else %}---- , {% endif %}{% if company.address_city != None %}{{ company.address_city }}{% else %} ---- {% endif %}</p>
+                            </div>
+                            <div class="col-md-4 col-6">
+                              <strong>Graduated?</strong>
+                              <br>
+                              <p class="text-muted">{% if company.graduationType != 'Live' %}Yes{% else %}No{% endif %}</p>
+                            </div>
+
+                          </div>    
+                          <div class="row mt-3">
+                                <div class="col-md-3 col-6 b-r">
+                                  <strong>Company Status</strong>
+                                  <br>
+                                  <p class=" mb-2 badge badge-{% if company.company_status != 'Unregistered' %}success{% else %}danger{% endif %}">
+                                    {{ company.company_status }}
+                                  </p>
+                                </div>
+                                
+                                <div class="col-md-3 col-6 b-r">
+                                  <strong>Startup Formed?</strong>
+                                  <br>
+
+                                  <p class=" mb-2 badge badge-{% if company.startupFormed != 'No' %}success{% else %}danger{% endif %}">
+                                    {{ company.startupFormed }}
+                                  </p>
+                                </div>
+                              </div>
+                              
+                              {% if company.company_status != "Unregistered" %}
+                              <h5 class="m-t-30 text-info">COMPANY</h5>
+                              <div class="row m-t-20">
+                                <div class="col-md-4 col-6">
+                                  <strong>PAN (Permanent Account Number)</strong>
+                                  <br>
+                                  <p class="text-muted">{% if company.company_pan != None %}{{ company.company_pan }}{% else %}Not Available{% endif %}</p>
+                                </div>
+                                <div class="col-md-4 col-6">
+                                  <strong>Company Website</strong>
+                                  <br>
+                                  <p class="text-muted">{% if company.url != None %}<a href="{{ company.url }}">{{ company.url }}</a>{% else %}Not Available{% endif %}</p>
+                                </div>
+                                <div class="col-md-4 col-6">
+                                  <strong>Company Logo</strong>
+                                  <br>
+                                  <figure class="avatar avatar-xl ">
+                                    <img src="{% static company.logo %}" >
+                                  </figure>
+                                  <!-- <p class="text-muted">{% if company.url != None %}{{ company.url }}{% else %}Not Available{% endif %}</p> -->
+                                </div>
+                                <div class="col-md-4 col-6">
+                                  <strong>Incorporation Date</strong>
+                                  <br>
+                                  <p class="text-muted">{% if company.incorporationDate != None %}{{ company.incorporationDate }}{% else %}Not Available{% endif %}</p>
+                                </div>
+                                <div class="col-md-4 col-6">
+                                  <strong>Incorporation Certificate</strong>
+                                  <br>
+                                  {% if company.incorporationCertificate.url|slice:"-3:" == "pdf"  %}
+                                  <button type="button" class="btn btn-primary btn-icon icon-left" data-toggle="modal" data-target="#docview" onclick="document.getElementById('docviewfile').src = '{% static company.incorporationCertificate.url %}';">
+                                      <i class="fas fa-eye"></i> View 
+                                  </button>
+                                  {% elif company.incorporationCertificate == "" %}
+                                  Not Uploaded
+                                  {% else %}
+                                  <a href="{% static company.incorporationCertificate.url %}" download="{% static company.incorporationCertificate.url %}" class="btn btn-primary btn-icon icon-left"><i class="fas fa-download"></i> Download {{ company.incorporationCertificate.url|slice:"-4:" }}</a>
+                                  {% endif %}
+                                </div>
+                                <div class="col-md-4 col-6">
+                                  <strong>Graduation Date</strong>
+                                  <br>
+                                  <p class="text-muted">{% if company.graduationDate != None %}{{ company.graduationDate }}{% else %}Not Available{% endif %}</p>
+                                </div>
+                                <div class="col-md-4 col-6">
+                                  <strong>Enrollment Date</strong>
+                                  <br>
+                                  <p class="text-muted">{% if company.enrollmentDate != None %}{{ company.enrollmentDate }}{% else %}Not Available{% endif %}</p>
+                                </div>
+                                <div class="col-md-4 col-6">
+                                  <strong>Enrollment Agreement Date</strong>
+                                  <br>
+                                  <p class="text-muted">{% if company.enrollmentagreementDate != None %}{{ company.enrollmentagreementDate }}{% else %}Not Available{% endif %}</p>
+                                </div>
+                                <div class="col-md-4 col-6">
+                                  <strong>Next Renewal On</strong>
+                                  <br>
+                                  <p class="text-muted">{% if company.renewalDate != None %}{{ company.renewalDate }}{% else %}Not Available{% endif %}</p>
+                                </div>
+                                <div class="col-md-4 col-6">
+                                  <strong>CIN (Company Identification Number)</strong>
+                                  <br>
+                                  <p class="text-muted">{% if company.cin != None %}{{ company.cin }}{% else %}Not Available{% endif %}</p>
+                                </div>
+                                <div class="col-md-4 col-6">
+                                  <strong>DIN (Director Identification Number)</strong>
+                                  <br>
+                                  <p class="text-muted">{% if company.din != None %}{{ company.din }}{% else %}Not Available{% endif %}</p>
+                                </div>
+                                <div class="col-md-4"></div>
+                                <div class="col-md-4 col-6">
+                                  <strong>Survival During Incubation</strong>
+                                  <br>
+                                  <p class="text-muted">{% if company.survivalDuringIncubation != None %}{{ company.survivalDuringIncubation }}{% else %}Not Available{% endif %}</p>
+                                </div>
+                                <div class="col-md-4 col-6">
+                                  <strong>Survival After Incubation</strong>
+                                  <br>
+                                  <p class="text-muted">{% if company.survivalAfterIncubation != None %}{{ company.survivalAfterIncubation }}{% else %}Not Available{% endif %}</p>
+                                </div><div class="col-md-4"></div>
+                                <div class="col-md-4 col-6">
+                                  <strong>Entity</strong>
+                                  <br>
+                                  <p class="text-muted">{% if company.entityDetails_id != None %}{{ company.entityDetails_id }}{% else %}Not Available{% endif %}</p>
+                                </div>
+                                <div class="col-md-4 col-6">
+                                  <strong>Entity Certificate</strong>
+                                  <br>
+                                  {% if company.entityCertificate.url|slice:"-3:" == "pdf"  %}
+                                  <button type="button" class="btn btn-primary btn-icon icon-left" data-toggle="modal" data-target="#docview" onclick="document.getElementById('docviewfile').src = '{% static company.entityCertificate.url %}';">
+                                      <i class="fas fa-eye"></i> View 
+                                  </button>
+                                  {% elif company.entityCertificate == "" %}
+                                  Not Uploaded
+                                  {% else %}
+                                  <a href="{% static company.entityCertificate.url %}" download="{% static company.entityCertificate.url %}" class="btn btn-primary btn-icon icon-left"><i class="fas fa-download"></i> Download {{ company.entityCertificate.url|slice:"-4:" }}</a>
+                                  {% endif %}
+                                </div>
+                              </div>
+                              {% endif %}
+                              {% if company.startupFormed != "No" %}
+                              <h5 class="m-t-30 text-info">STARTUP</h5>
+                              <div class="row m-t-20">
+                                <div class="col-md-4 col-6">
+                                  <strong>Startup Formed?</strong>
+                                  <br>
+                                  <p class="text-muted">{% if company.startupFormed != None %}{{ company.startupFormed }}{% else %}Not Available{% endif %}</p>
+                                </div>
+                                <div class="col-md-4 col-6">
+                                  <strong>Startup Formed On</strong>
+                                  <br>
+                                  <p class="text-muted">{% if company.startupFormedDate != None %}{{ company.startupFormedDate }}{% else %}Not Available{% endif %}</p>
+                                </div>
+                                
+                              </div>
+                              {% endif %}
+                        </div>
+                        <!-- Team -->
+                        <div class="tab-pane fade {% if page == 'team' %}show active{% endif %}" id="team" role="tabpanel" aria-labelledby="profile-tab2">                        
+                          <!-- team form -->
+                          <div class="collapse {% if success == 'TeamError' %} show{% endif %}" id="addTeamMember">
+                            <div class="row clearfix">
+                                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                  <div class="card">
+                                    <div class="card-header">
+                                      <h4>Team Create Form</h4>
+                                    </div>
+                                    <div class="card-body">
+                                      <form method="POST" action="{% url 'addMember' incubateeID=incubateeID %}" enctype="multipart/form-data">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="addTeamMembers">
+                                        <fieldset class="row">
+                                          {% for field in teamForm %}
+                                            <div class="col-6">
+                                              <div class="form-group">
+                                                {{ field|as_crispy_field }}
+                                              </div>
+                                            </div>
+                                          {% endfor %}
+                                        </fieldset>
+                                        <button type="submit" class="btn btn-primary">Save</button>
+                                      </form>
+                                    </div>
+                                  </div>
+                                </div>
+                            </div>
+                          </div>
+
+                          <div class="row mb-3">
+                            <div class="col">
+                              <h5>Team Members</h5>
+                            </div>
+                            <div class="d-flex justify-content-end col">
+                              <button class="btn btn-icon icon-left btn-primary" type="button" data-toggle="collapse"
+                              data-target="#addTeamMember" aria-expanded="false" aria-controls="addTeamMember">
+                              <i class="fas fa-plus"></i> Add new Incubatee
+                              </button>
+                            </div>
+                          </div>
+                          {% if success == "Team Created" %}
+                          <div class="">
+                              <div class="alert alert-success">
+                                  Team Member was Added successfully.
+                              </div>
+                          </div>
+                          {% endif %}                  
+                          <table class="table table-striped">
+                            <thead>
+                                <tr class="text-center">
+                                    <th class="col-1">#</th>
+                                    <th class="col-1">Profile</th>
+                                    <th class="col-3">Name</th>
+                                    <th class="col-2">Location</th>
+                                    <th class="col-1">Education</th>
+                                    <th class="col-2">Is Alumini?</th>
+                                    <th class="col-2">Role</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                              <div id="accordion">
+                                {% for i in members %}
+                                <tr>
+                                    <td colspan=7>
+                                        <div class="accordion">
+                                            <div class="accordion-header" role="button" data-toggle="collapse" data-target="#i{{ forloop.counter}}" style="background-color: transparent;">
+                                                <div class="col-12 text-center row d-flex justify-content-center align-items-center m-0 p-0" >
+                                                    <div class="col-1">{{ forloop.counter }}</div>
+                                                    <div class="col-1">
+                                                        <figure class="avatar avatar-xl mt-2 mb-2">
+                                                            <img src="{% static i.profile %}" >
+                                                        </figure>
+                                                    </div>
+                                                    <div class="col-3">{{ i.name }}</div>
+                                                    <div class="col-2">
+                                                      {{ i.city }}, {{ i.state }}
+                                                    </div>
+                                                    <div class="col-1">
+                                                        {{ i.education }}
+                                                    </div>
+                                                    <div class="font-weight-600 col-2 ">
+                                                        {% if i.alumini == None %}No{% else %}Yes, {{ i.alumini }}{% endif %}
+                                                    </div>                    
+                                                    <div class="col-2 ">
+                                                      {{ i.role }}
+                                                    </div>                    
+                                                </div>
+                                            </div>
+                                            <div class="accordion-body collapse" id="i{{ forloop.counter}}" data-parent="#accordion">
+                                                <div class="row m-0 p-1 d-flex justify-content-center">
+                                                  <div class="col-md-2 col-6">
+                                                    <strong>Aadhaar Number</strong>
+                                                    <br>
+                                                    <p class="text-muted">{{ i.aadhaar }}</p>
+                                                  </div>
+                                                  <div class="col-md-2 col-6">
+                                                    <strong>PAN Number</strong>
+                                                    <br>
+                                                    <p class="text-muted">{{ i.pan }}</p>
+                                                  </div>
+                                                  <div class="col-md-2 col-6">
+                                                    <strong>Mobile</strong>
+                                                    <br>
+                                                    <p class="text-muted">{{ i.mobile }}</p>
+                                                  </div>
+                                                  <div class="col-md-4 col-6">
+                                                    <strong>Mail ID</strong>
+                                                    <br>
+                                                    <p class="text-muted">{{ i.mail }}</p>
+                                                  </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>                                  
+                                {% empty %}
+                                <tr>
+                                    <td colspan=8>
+                                        {% include 'empty.html' %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                                </div>
+                            </tbody>
+                          </table>
+                        </div>
+                        <!-- Project -->
+                        <div class="tab-pane fade {% if page == 'project' %}show active{% endif %}" id="project" role="tabpanel" aria-labelledby="contact-tab2">
+                          
+                          {% if success == "Project Created" %}
+                          <div class="">
+                              <div class="alert alert-success">
+                                  Project was Added successfully.
+                              </div>
+                          </div>
+                          {% endif %} 
+                          <div class="row">
+                            <div class="col-md-6 col-12">
+                              <label for="">Choose Project</label>
+                              <form action="{% url 'incubatee' incubateeID=incubateeID page='project' %}" method="post">
+                                {% csrf_token %}
+                                <select class="form-control" name="title" onchange="this.form.submit();">
+                                    <option disabled {% if projectID == None %} selected {% endif %}>Select Project Title</option>
+                                    {% for i in projects %}
+                                    <option value="{{ i.title }}" {% if i.id == projectID %} selected {% endif %}>{{ i.title }} </option>
+                                    {% endfor %}
+                                </select>
+                              </form>
+                            </div>
+                            <div class="col-md-4 col-12 p-3 mt-4">
+                            </div>
+                            <div class="col-md-2 col-12 d-flex justify-content-end p-3">
+                              <button type="button" class=" btn btn-success" id="addProjectbtn" data-toggle="modal" data-target="#addProjectModal">
+                                <i class="fas fa-plus"></i> Add Project
+                              </button>
+                            </div>
+
+                          </div>
+                          <!-- select project -->
+
+                          <!-- project -->
+                          {% if selectedProject %}
+                          <div class="m-t-30">
+                            <ul class="nav nav-pills m-b-20 text-center" id="myTab3" role="tablist">
+                              <li class="nav-item col">
+                                <a class="nav-link {% if project_active == 'overview' %} active{% endif %}" id="home-tab3" data-toggle="tab" href="#projectTab" role="tab" aria-controls="home" aria-selected="false">Overview</a>
+                              </li>
+                              <li class="nav-item col ">
+                                <a class="nav-link {% if project_active == 'installment' %} active {% endif %}" id="profile-tab3" data-toggle="tab" href="#installmentTab" role="tab" aria-controls="profile" aria-selected="false">Installment</a>
+                              </li>
+                              <li class="nav-item col">
+                                <a class="nav-link {% if project_active == 'ip' %} active {% endif %}" id="contact-tab3" data-toggle="tab" href="#ipTab" role="tab" aria-controls="contact" aria-selected="true">IP</a>
+                              </li>
+                              <li class="nav-item col">
+                                <a class="nav-link {% if project_active == 'impact' %} active{% endif %}" id="contact-tab3" data-toggle="tab" href="#impactTab" role="tab" aria-controls="contact" aria-selected="true">Impact</a>
+                              </li>
+                            </ul>
+                            <div class="tab-content border-top" id="myTabContent2">
+                              <!-- Overview -->
+                              <div class="tab-pane fade border-0 {% if project_active == 'overview' %} active show{% endif %}" id="projectTab" role="tabpanel" aria-labelledby="home-tab3">
+                                <div class="row">
+                                  <div class="col-md-3 col-6">
+                                    <strong>Project Title</strong>
+                                    <br>
+                                    <p class="text-muted">{{ selectedProject.title }}</p>
+                                  </div>
+                                  <div class="col-md-3 col-6">
+                                    <strong>Financial Year</strong>
+                                    <br>
+                                    <p class="text-muted">{{ selectedProject.financialYear_id }}</p>
+                                  </div>
+                                  <div class="col-md-3 col-6">
+                                    <strong>Scheme</strong>
+                                    <br>
+                                    <p class="text-muted">{{ selectedProject.scheme_id }}</p>
+                                  </div>
+                                  <div class="col-md-3 col-6">
+                                    <strong>Fund Type</strong>
+                                    <br>
+                                    <p class="text-muted">{{ selectedProject.fund_type_id }}</p>
+                                  </div>
+                                  <div class="col-md-12 col-6">
+                                    <strong>Project Description</strong>
+                                    <br>
+                                    <p class="text-muted">{{ selectedProject.description }}</p>
+                                  </div>
+                                  <div class="col-md-3 col-6">
+                                    <strong>Project Domain</strong>
+                                    <br>
+                                    <p class="text-muted">{{ selectedProject.domain }}</p>
+                                  </div>
+                                  <div class="col-md-3 col-6">
+                                    <strong>Project Term</strong>
+                                    <br>
+                                    <p class="text-muted">{{ selectedProject.term }}</p>
+                                  </div>
+                                  <div class="col-md-3 col-6">
+                                    <strong>Project Total Amount</strong>
+                                    <br>
+                                    <p class="text-muted font-weight-600">₹ {{ selectedProject.amount }}</p>
+                                  </div>
+                                  <div class="col-md-3 col-6">
+                                    <strong>Amount Sanctioned On</strong>
+                                    <br>
+                                    <p class="text-muted font-weight-600">{% if selectedProject.amountSanctionedDate != None %}{{ selectedProject.amountSanctionedDate }}{% else %}No Amount Disbursed{% endif %}</p>
+                                  </div>
+                                  <div class="col-md-3 col-6">
+                                    <strong>Project Start On</strong>
+                                    <br>
+                                    <p class="text-muted font-weight-600">{% if selectedProject.startDate != None %}{{ selectedProject.startDate }}{% else %}Not Yet started{% endif %}</p>
+                                  </div>
+                                  <div class="col-md-3 col-6">
+                                    <strong>Estimated Completion Date</strong>
+                                    <br>
+                                    <p class="text-muted font-weight-600">{% if selectedProject.endDate != None %}{{ selectedProject.endDate }}{% else %}Not Yet Completed{% endif %}</p>
+                                  </div>
+                                  <div class="col-md-3 col-6">
+                                    <strong>Completed On</strong>
+                                    <br>
+                                    <p class="text-muted font-weight-600">{% if selectedProject.completionDate != None %}{{ selectedProject.completionDate }}{% else %}Not Yet Completed{% endif %}</p>
+                                  </div>
+                                  <div class="col-md-3"></div>
+                                  <div class="col-md-3 col-6">
+                                    <strong>Project Current Status</strong>
+                                    <br>
+                                    <p class="text-muted font-weight-600">
+                                      <span class="badge badge-{% if selectedProject.status == 'In Progress' %}primary{% elif selectedProject.status == 'Completed' %}success{% else %}success{% endif %}">{{ selectedProject.status }}</span>
+                                    </p>
+                                  </div>
+                                  <div class="col-md-3 col-6">
+                                    <strong>Product Status</strong>
+                                    <br>
+                                    <p class="text-muted font-weight-600">
+                                      <span class="badge badge-{% if selectedProject.projectStatus == 'Proof of Concept' %}warning{% elif selectedProject.projectStatus == 'Prototype' %}primary{% else %}success{% endif %}">{{ selectedProject.status }}</span>
+                                    </p>
+                                  </div>
+                                  <div class="col-md-3 col-6">
+                                    <strong>Closrure Report</strong>
+                                    <br>
+                                    {% if selectedProject.closureReport.url|slice:"-3:" == "pdf"  %}
+                                    <button type="button" class="btn btn-primary btn-icon icon-left" data-toggle="modal" data-target="#docview" onclick="document.getElementById('docviewfile').src = '{% static selectedProject.closureReport.url %}';">
+                                        <i class="fas fa-eye"></i> View 
+                                    </button>
+                                    {% elif selectedProject.closureReport == "" %}
+                                    Not Uploaded
+                                    {% else %}
+                                    <a href="{% static selectedProject.closureReport.url %}" download="{% static selectedProject.closureReport.url %}" class="btn btn-primary btn-icon icon-left"><i class="fas fa-download"></i> Download {{ selectedProject.closureReport.url|slice:"-4:" }}</a>
+                                    {% endif %}
+                                  </div>
+                                  <div class="col-md-3 col-6">
+                                    <strong>Certified UC_SE Report</strong>
+                                    <br>
+                                    {% if selectedProject.certifiedUC_SE.url|slice:"-3:" == "pdf"  %}
+                                    <button type="button" class="btn btn-primary btn-icon icon-left" data-toggle="modal" data-target="#docview" onclick="document.getElementById('docviewfile').src = '{% static selectedProject.certifiedUC_SE.url %}';">
+                                        <i class="fas fa-eye"></i> View 
+                                    </button>
+                                    {% elif selectedProject.certifiedUC_SE == "" %}
+                                    Not Uploaded
+                                    {% else %}
+                                    <a href="{% static selectedProject.certifiedUC_SE.url %}" download="{% static selectedProject.certifiedUC_SE.url %}" class="btn btn-primary btn-icon icon-left"><i class="fas fa-download"></i> Download {{ selectedProject.certifiedUC_SE.url|slice:"-4:" }}</a>
+                                    {% endif %}
+                                  </div>
+                                  <div class="col-md-12 col-6">
+                                    <strong>Project Outcome</strong>
+                                    <br>
+                                    <p class="text-muted font-weight-600">{% if selectedProject.outcome != None %}{{ selectedProject.outcome }}{% else %}Not Yet Mentioned{% endif %}</p>
+                                  </div>
+                                </div>
+                              </div>
+                              <!-- installment -->
+                              <div class="tab-pane fade border-0 {% if project_active == 'installment' %} active show{% endif %}" id="installmentTab" role="tabpanel" aria-labelledby="profile-tab3">
+                                <div class="row mb-3">
+                                  <div class="col pt-3">
+                                    <h5>Fund Details</h5>
+                                  </div>
+                                  <div class="d-flex justify-content-end col">
+                                    <button type="button" class="mt-2 btn btn-dark" id="addInstallmentbtn" data-toggle="modal" data-target="#addInstallmentModal">
+                                      <i class="fas fa-plus"></i> Add Installment
+                                    </button>
+                                  </div>
+                                </div>
+                                {% if success == "Installment Added" %}
+                                <div class="">
+                                    <div class="alert alert-success">
+                                        Installment was Added successfully.
+                                    </div>
+                                </div>
+                                {% endif %}                  
+                                {% if success == "Installment Updated" %}
+                                <div class="">
+                                    <div class="alert alert-success">
+                                        Installment was Updated successfully.
+                                    </div>
+                                </div>
+                                {% endif %}                  
+                                
+                                <div class="row p-2 ">
+                                  <div class="col-md-3 col-6">
+                                    <strong>Project Total Amount</strong>
+                                    <br>
+                                    <p class="text-muted font-weight-600">₹ {{ selectedProject.amount }}</p>
+                                  </div>
+                                  <div class="col-md-3 col-6">
+                                    <strong>Amount Sanctioned On</strong>
+                                    <br>
+                                    <p class="text-muted font-weight-600">{% if selectedProject.amountSanctionedDate != None %}{{ selectedProject.amountSanctionedDate }}{% else %}No Amount Disbursed{% endif %}</p>
+                                  </div>
+                                  <div class="col-md-3 col-6">
+                                    <strong>No. of Installments</strong>
+                                    <br>
+                                    <p class="text-muted font-weight-600">{% if installments %}{{ installments|length }}{% else %}No Amount Disbursed{% endif %}</p>
+                                  </div>
+                                </div>
+                                <h6>Installments</h6>
+                                <div class="table-responsive">
+                                  <table class="table table-striped table-md">
+                                    <tbody>
+                                      <tr>
+                                        <th>#</th>
+                                        <th>Installment Date</th>
+                                        <th>Disbursement Date</th>
+                                        <th>Amount</th>
+                                        <th>Progress Report</th>
+                                        <th>UC Attachment</th>
+                                        <th class="col-2">Remarks</th>
+                                        <th>Action</th>
+                                      </tr>
+                                      {% for i in installments %}
+                                      <tr id="ins-{{ forloop.counter }}">
+                                        <td>{{ forloop.counter }}</td>
+                                        <td>{{ i.installmentDate }}</td>
+                                        <td>{% if i.disbursedOn != None %}{{ i.disbursedOn }}{% else %}Yet to Disburse{% endif %}</td>
+                                        <td>₹ {{ i.disbursedAmt }}</td>
+                                        <td>
+                                          {% if i.uc_attachment.url|slice:"-3:" == "pdf"  %}
+                                          <button type="button" class="btn btn-primary btn-icon icon-left" data-toggle="modal" data-target="#docview" onclick="document.getElementById('docviewfile').src = '{% static i.uc_attachment.url %}';">
+                                              <i class="fas fa-eye"></i> View 
+                                          </button>
+                                          {% elif i.uc_attachment == "" %}
+                                          Not Uploaded
+                                          {% else %}
+                                          <a href="{% static i.uc_attachment.url %}" download="{% static i.uc_attachment.url %}" class="btn btn-primary btn-icon icon-left"><i class="fas fa-download"></i> Download {{ i.uc_attachment.url|slice:"-4:" }}</a>
+                                          {% endif %}
+                                        </td>
+                                        <td>
+                                          {% if i.progressReport.url|slice:"-3:" == "pdf"  %}
+                                          <button type="button" class="btn btn-primary btn-icon icon-left" data-toggle="modal" data-target="#docview" onclick="document.getElementById('docviewfile').src = '{% static i.progressReport.url %}';">
+                                              <i class="fas fa-eye"></i> View 
+                                          </button>
+                                          {% elif i.progressReport == "" %}
+                                          Not Uploaded
+                                          {% else %}
+                                          <a href="{% static i.progressReport.url %}" download="{% static i.progressReport.url %}" class="btn btn-primary btn-icon icon-left"><i class="fas fa-download"></i> Download {{ i.progressReport.url|slice:"-4:" }}</a>
+                                          {% endif %}
+                                        </td>
+                                        <td>{% if i.remarks != "" %}{{ i.remarks }}{% else %}No Remarks Available{% endif %}</td>
+                                        <td>
+                                          <button type="button" class="btn btn-primary" id="editInstallmentbtn" data-toggle="modal" data-target="#addInstallmentModal"
+                                           onclick="editInstallment({{ forloop.counter }},{{ i.id }});"
+                                          > <i class="fas fa-edit"></i>
+                                          </button>
+                                        </td>
+                                      </tr>
+                                      {% endfor %}
+                                    </tbody>
+                                  </table>
+                                </div>
+                              </div>
+                              <!-- IP -->
+                              <div class="tab-pane fade border-0 {% if project_active == 'ip' %} active show{% endif %}" id="ipTab" role="tabpanel" aria-labelledby="contact-tab3">
+                                <div class="patent">
+                                  <div class="row mb-3">
+                                    <div class="col pt-3">
+                                      <h5>Patent</h5>
+                                    </div>
+                                    <div class="d-flex justify-content-end col">
+                                      <button type="button" class="mt-2 btn btn-dark" id="addPatentbtn" data-toggle="modal" data-target="#addPatentModal">
+                                        <i class="fas fa-plus"></i> Add Patent
+                                      </button>
+                                    </div>
+                                  </div>
+                                  {% if success == "Patent Added" %}
+                                  <div class="">
+                                      <div class="alert alert-success">
+                                          Patent was Added successfully.
+                                      </div>
+                                  </div>
+                                  {% endif %}                  
+                                  {% if success == "Patent Updated" %}
+                                  <div class="">
+                                      <div class="alert alert-success">
+                                          Patent was Updated successfully.
+                                      </div>
+                                  </div>
+                                  {% endif %}  
+                                  <div class="table-responsive">
+                                    <table class="table table-striped table-md">
+                                      <thead class="">
+                                        <th scope="col">#</th>
+                                        <th scope="col">BASIC INFORMATION</th>
+                                        <th scope="col">PATENT INFORMATION</th>
+                                        <th scope="col" class="col-4">ADDITIONAL INFORMATION</th>
+                                        <!-- <th scope="col">EDIT</th> -->
+                                      </thead>
+                                      <tbody >
+                                        {% for patent in patents %}
+                                        <tr id="pat-{{ forloop.counter }}">
+                                          <td class="pt-5">{{ forloop.counter }}</td>
+                                          <td class="">
+                                            <div class="col-12 ">
+                                              <h6 class="row text-dark">Title</h6>
+                                              <p class="row text-dark">{{ patent.title }}</p>
+                                            </div>
+                                            <div class="col-12 ">
+                                              <h6 class="row text-dark">Filing Date</h6>
+                                              <p class="row text-dark">{{ patent.filedOn }}</p>
+                                            </div>
+                                          </td>
+                                          <td class="">
+                                            <div class="col-12 ">
+                                              <h6 class="row text-dark">Patent Type</h6>
+                                              <p class="row text-dark">{{ patent.type }}</p>
+                                            </div>
+                                            <div class="col-12 ">
+                                              <h6 class="row text-dark">Patent Number</h6>
+                                              <p class="row text-dark">{{ patent.patentNo }}</p>
+                                            </div>
+                                          </td>
+                                          <td class="">
+                                            <div class="col-12 ">
+                                              <h6 class="row text-dark">Publication Country</h6>
+                                              <p class="row text-dark">{{ patent.publishedAt }}</p>
+                                            </div>
+                                            <div class="col-12 ">
+                                              <h6 class="row text-dark">Patent Status</h6>
+                                              <p class="row text-dark"> {{ patent.status }}
+                                              {% if 'Granted' in patent.status %} 
+                                              <img src="https://img.icons8.com/external-bearicons-glyph-bearicons/40/008000/external-badge-approved-and-rejected-bearicons-glyph-bearicons.png"/>
+                                              {% else %}
+                                              <img src="https://img.icons8.com/external-bearicons-glyph-bearicons/40/737075/external-badge-approved-and-rejected-bearicons-glyph-bearicons-1.png"/>
+                                              {% endif %}
+                                              </p>
+                                            </div>
+                                          </td>
+                                          <!-- <td class="pt-5">
+                                            <p class="btn btn-warning" onclick="editPatent({{ forloop.counter }},{{ patent.id }});">
+                                              <i class="fas fa-edit"></i>
+                                            </p>
+                                          </td> -->
+                                        </tr>
+                                        {% empty %}
+                                        <tr>
+                                          <td colspan="5" class="text-center">No patent was filed...</td>
+                                        </tr>
+                                        {% endfor %}
+                                      </tbody>
+                                    </table>
+                                  </div>
+                                </div>
+                                <div class="">
+                                  <div class="row mb-3">
+                                    <div class="col pt-3">
+                                      <h5>Copyright</h5>
+                                    </div>
+                                    <div class="d-flex justify-content-end col">
+                                      <button type="button" class="mt-2 btn btn-dark" id="addCopyrightbtn" data-toggle="modal" data-target="#addCopyrightModal">
+                                        <i class="fas fa-plus"></i> Add Copyright
+                                      </button>
+                                    </div>
+                                  </div>
+                                  {% if success == "Copyright Added" %}
+                                  <div class="">
+                                      <div class="alert alert-success">
+                                          Copyright was Added successfully.
+                                      </div>
+                                  </div>
+                                  {% endif %}                  
+                                  {% if success == "Copyright Updated" %}
+                                  <div class="">
+                                      <div class="alert alert-success">
+                                          Copyright was Updated successfully.
+                                      </div>
+                                  </div>
+                                  {% endif %}  
+                                  <div class="table-responsive">
+                                    <table class="table table-striped table-md">
+                                      <thead class="">
+                                        <th scope="col">#</th>
+                                        <th scope="col">BASIC INFORMATION</th>
+                                        <th scope="col">COPYRIGHT INFORMATION</th>
+                                        <th scope="col" class="col-4">ADDITIONAL INFORMATION</th>
+                                        <!-- <th scope="col">EDIT</th> -->
+                                      </thead>
+                                      <tbody class="">
+                                        {% for copyright in copyrights %}
+                                        <tr id="cop-{{ forloop.counter }}">  
+                                          <td>{{ forloop.counter }}</td>
+                                          <td class="">
+                                            <div class="col-12 ">
+                                              <h6 class="row text-dark">Title</h6>
+                                              <p class="row text-dark">{{ copyright.title }}</p>
+                                            </div>
+                                            <div class="col-12 ">
+                                              <h6 class="row text-dark">Filing Date</h6>
+                                              <p class="row text-dark">{{ copyright.filedOn }}</p>
+                                            </div>
+                                          </td>
+                                          <td class="">
+                                            <div class="col-12 ">
+                                              <h6 class="row text-dark">Copyright Type</h6>
+                                              <p class="row text-dark">{{ copyright.type }}</p>
+                                            </div>
+                                            <div class="col-12 ">
+                                              <h6 class="row text-dark">Copyright Number</h6>
+                                              <p class="row text-dark">{{ copyright.copyrightNo }}</p>
+                                            </div>
+                                          </td>
+                                          <td class="">
+                                            <div class="col-12 ">
+                                              <h6 class="row text-dark">Publication Country</h6>
+                                              <p class="row text-dark">{{ copyright.publishedAt }}</p>
+                                            </div>
+                                            <div class="col-12 ">
+                                              <h6 class="row text-dark">Copyright Status</h6>
+                                              <p class="row text-dark"> {{ copyright.status }}
+                                              {% if 'Granted' in copyright.status %} 
+                                              <img src="https://img.icons8.com/external-bearicons-glyph-bearicons/40/008000/external-badge-approved-and-rejected-bearicons-glyph-bearicons.png"/>
+                                              {% else %}
+                                              <img src="https://img.icons8.com/external-bearicons-glyph-bearicons/40/737075/external-badge-approved-and-rejected-bearicons-glyph-bearicons-1.png"/>
+                                              {% endif %}
+                                              </p>
+                                            </div>
+                                          </td>
+                                          <!-- <td class="pt-5">
+                                            <p class="bx bxs-edit text-primary h3" style="cursor: pointer;" onclick="getProjectcopyright({{ copyright.id }});">
+                                            </p>
+                                          </td> -->
+                                        </tr>
+                                        {% empty %}
+                                        <tr>
+                                          <td colspan="4" class="text-center">No Copyright was filed...</td>
+                                        </tr>
+                                        {% endfor %}
+                                      </tbody>
+                                    </table>
+                                  </div>
+                                </div>
+                                <div class="row mb-3">
+                                  <div class="col pt-3">
+                                    <h5>Trademark</h5>
+                                  </div>
+                                  <div class="d-flex justify-content-end col">
+                                    <button type="button" class="mt-2 btn btn-dark" id="addTrademarkbtn" data-toggle="modal" data-target="#addTrademarkModal">
+                                      <i class="fas fa-plus"></i> Add Trademark
+                                    </button>
+                                  </div>
+                                </div>
+                                {% if success == "Trademark Added" %}
+                                <div class="">
+                                    <div class="alert alert-success">
+                                        Trademark was Added successfully.
+                                    </div>
+                                </div>
+                                {% endif %}                  
+                                {% if success == "Trademark Updated" %}
+                                <div class="">
+                                    <div class="alert alert-success">
+                                        Trademark was Updated successfully.
+                                    </div>
+                                </div>
+                                {% endif %}  
+                                <div class="table-responsive">
+                                  <table class="table table-hover">
+                                    <thead class="thead-dark">
+                                      <th scope="col">#</th>  
+                                      <th scope="col">IMAGE</th>  
+                                      <th scope="col">REMARKS</th>
+                                      <th scope="col">FILED ON</th>
+                                      <th scope="col">TRADEMARK NO</th>
+                                      <!-- <th scope="col">EDIT</th> -->
+                                    </thead>
+                                    <tbody class="">
+                                      {% for trademark in trademarks %}
+                                      <tr id="tdm-{{ forloop.counter }}">
+                                        <td>{{ forloop.counter }}</td>
+                                          <td><img class="avatar avatar-md" src="{% static trademark.image %}" alt="No Image"></td>
+                                          <td>{% if trademark.remarks == "" %}......{% else %}{{ trademark.remarks }}{% endif %}</td>
+                                          <td>{{ trademark.filedOn }}</td>
+                                          <td>{{ trademark.trademarkNo }}</td>
+                                        <!-- <td class="">
+                                          <p class="bx bxs-edit text-primary h3" style="cursor: pointer;" onclick="getProjecttrademark({{ trademark.id }});">
+                                          </p>
+                                        </td> -->
+                                      </tr>
+                                      {% empty %}
+                                      <tr>
+                                        <td colspan="5" class="text-center">No Trademark was filed...</td>
+                                      </tr>
+                                      {% endfor %}
+                                    </tbody>
+                                  </table>
+                                </div>
+                              </div>
+                              <!-- Impact -->
+                              <div class="tab-pane fade border-0 {% if project_active == 'impact' %} active show{% endif %}" id="impactTab" role="tabpanel" aria-labelledby="contact-tab3">
+                                {% include 'impact.html' %}
+                              </div>
+                            </div>
+                          </div>
+                          {% endif %}
+                        </div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+            
+          </div>
+        </div>
+      </section>
+</div>
+{% endblock content %}
+
+{% block js %}
+<script src="{% static 'Front End/JS/bundles/iziToast.min.js' %}"></script>
+<script src="{% static 'Front End/JS/bundles/select2.full.min.js' %}"></script>
+<script>
+    var a = document.getElementById("incubatees");
+    a.classList.add("active");
+
+        
+    function toast(){
+        {% if toast.0 == 'error' %}
+        iziToast.error({
+            title: 'Deleted!',
+            message: '{{ toast.1 }}',
+            position: 'topRight'
+        });
+        {% elif toast.0 == 'success' %}
+        iziToast.success({
+            title: 'Added!',
+            message: '{{ toast.1 }}',
+            position: 'topRight'
+        });
+        {% endif %}
+        {% if success == "addInstallment" %}
+            document.getElementById("addInstallmentbtn").click();
+        {% elif success == "addProject" %}
+            document.getElementById("addProjectbtn").click();
+        {% endif %}
+    }    
+</script>
+{% endblock js %}

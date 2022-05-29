@@ -1,0 +1,321 @@
+{% extends "body.html" %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block CSS %}
+{% endblock CSS %}
+
+{% block title %}
+Report
+{% endblock title %}
+
+{% block content %}
+<div class="main-content">
+    <section class="section">
+    <div class="section-header">
+        <div class="col">
+            <h1>Report</h1>
+        </div>
+    </div>
+    <div class="row">
+        <!-- Customize -->
+        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4>Cusomize your Report</h4>
+                </div>
+                <div class="card-body">
+                    <form action="{% url 'reportDomain' %}" class="row" method="post">
+                        {% csrf_token %}
+
+                        <div class="col-3">
+                            <div class="form-group">
+                                <div id="" class="form-group">
+                                    <label for="id_startAge" class=" requiredField">
+                                        Year From<span class="asteriskField">*</span>
+                                    </label>
+                                    <div class="">
+                                        <input type="number" placeholder="YYYY" name="startYear" class="form-control" min=2005 max=2100 required="" id="id_startYear" value="{{ from }}">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-3">
+                            <div class="form-group">
+                                <div id="" class="form-group">
+                                    <label for="id_endYear" class=" requiredField">
+                                        Year To<span class="asteriskField">*</span>
+                                    </label>
+                                    <div class="">
+                                        <input type="number" placeholder="YYYY" name="toYear" class="form-control" min=2005 max=2100 required id="id_endYear" value="{{ to }}">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-1">
+                            <div class="form-group">
+                                <div id="" class="form-group">
+                                    <div class="">
+                                        <input type="submit" value="Fetch" class="btn btn-primary m-t-35">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- chart -->
+
+        <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12 col-6">
+            <div class="card">
+                <div class="card-header">
+                    <h4>Domain Analytics</h4>
+                </div>
+                <div class="card-body">
+                    <div class="recent-report__chart">
+                    <div id="domain"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12 col-6">
+            <div class="card">
+              <div class="card-header">
+                <h4>Domains</h4>
+              </div>
+              <div class="card-body">
+                <div class="recent-report__chart">
+                  <div id="piechart"></div>
+                </div>
+              </div>
+            </div>
+        </div>
+        <!-- data -->
+        <div class="col-12 col-sm-12 col-lg-12">
+            <div class="card">
+                <div class="card-header">
+                <h4>Age Report</h4>
+                </div>
+                <div class="card-body">
+                <div class="table-responsive table-invoice">
+                    <table class="table table-striped text-center">
+                        <thead>
+                            <tr>
+                                <th>Year</th>
+                                <th>No. of Project's</th>
+                                <th>Domain</th>
+                            </tr>
+                        </thead>
+                    {% for i in report %}
+                    <tr>
+                        <td>{{ i.financialYear }}</td>
+                        <td class="text-center">{{ i.total }}</td>
+                        <td class="pt-2 pb-2">
+                            <div class="d-flex justify-content-center">
+                                <ul class="list-group">
+                                    {% for j in i.domains %}
+                                    {% if j != 0  %}
+                                    <li class="list-group-item p-1">
+                                        <span class="col text-end">
+                                            {{ j.domain }}
+                                        </span>
+                                        <span class="col text-start">
+                                            {{ j.count }}
+                                        </span>
+                                    </li>
+                                    {% endif %}
+                                    {% empty %}
+                                    <div>No Projects Available</div>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        </td>
+                        
+                    </tr>
+                    {% endfor %}
+                    </table>
+                </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    </section>  
+</div>
+
+
+
+{% endblock content %}
+
+{% block js %}
+
+<script src="{% static 'Front End/JS/bundles/chart.min.js' %}"></script>
+<script src="{% static 'Front End/JS/bundles/apexcharts.min.js' %}"></script>
+<script>
+    var a = document.getElementById("domainReport");
+    a.classList.add("active");
+    var a = document.getElementById("reports");
+    a.classList.add("active");
+    
+//charts
+'use strict';
+$(function () {
+    piechart();
+    domains();
+});
+
+function domains(){
+
+    var options = {
+               chart: {
+                   height: 350,
+                   type: 'bar',
+               },
+               plotOptions: {
+                   bar: {
+                       dataLabels: {
+                           position: 'top', // top, center, bottom
+                       },
+                   }
+               },
+               dataLabels: {
+                   enabled: true,
+                   formatter: function (val) {
+                       return val;
+                   },
+                   offsetY: -20,
+                   style: {
+                       fontSize: '12px',
+                       colors: ["#304758"]
+                   }
+               },
+               series: [{
+                   name: 'No. of Projects',
+                   data: [{% for i in chart.column %}"{{ i.count }}",{% endfor %}],
+               }],
+               xaxis: {
+                   categories: [{% for i in chart.column %}"{{ i.domain }}",{% endfor %}],
+                   position: 'top',
+                   labels: {
+                       offsetY: -18,
+   
+                   },
+                   axisBorder: {
+                       show: false
+                   },
+                   axisTicks: {
+                       show: false
+                   },
+                   crosshairs: {
+                       fill: {
+                           type: 'gradient',
+                           gradient: {
+                               colorFrom: '#D8E3F0',
+                               colorTo: '#BED1E6',
+                               stops: [0, 100],
+                               opacityFrom: 0.4,
+                               opacityTo: 0.5,
+                           }
+                       }
+                   },
+                   tooltip: {
+                       enabled: true,
+                       offsetY: -35,
+   
+                   }
+               },
+               fill: {
+                   gradient: {
+                       shade: 'light',
+                       type: "horizontal",
+                       shadeIntensity: 0.25,
+                       gradientToColors: undefined,
+                       inverseColors: true,
+                       opacityFrom: 1,
+                       opacityTo: 1,
+                       stops: [50, 0, 100, 100]
+                   },
+               },
+               yaxis: {
+                   axisBorder: {
+                       show: false
+                   },
+                   axisTicks: {
+                       show: false,
+                   },
+                   labels: {
+                       show: false,
+                       formatter: function (val) {
+                           return val;
+                       }
+                   }
+   
+               },
+               title: {
+                   text: 'Domain Analysis',
+                   floating: true,
+                   offsetY: 320,
+                   align: 'center',
+                   style: {
+                       color: '#444'
+                   }
+               },
+           }
+   
+           var chart = new ApexCharts(
+               document.querySelector("#domain"),
+               options
+           );
+   
+           chart.render();
+       
+    }
+
+    function piechart(){
+        var options = {
+                chart: {
+                    height: 350,
+                    type: 'donut',
+                    toolbar:{
+                        show: true,
+                    }
+                },
+                plotOptions: {
+                    pie: {
+                        horizontal: false,
+                        columnWidth: '55%',
+                        donut: {
+                            labels:{
+                                show: true,
+                            }
+                        },
+                    },
+                },
+                dataLabels:{
+                    enabled:true,
+                    formatter:function(val,opts){
+                        return opts.w.config.series[opts.seriesIndex]
+                    },
+                },
+                labels: [{% for i in chart.column %}"{{ i.domain }}",{% endfor %}],
+                series: [{% for i in chart.column %}{{ i.count }},{% endfor %}],
+                responsive: [{
+                    options: {
+                        legend: {
+                            position: 'top'
+                        }
+                    }
+                }]
+            }
+            var chart = new ApexCharts(
+                document.querySelector("#piechart"),
+                options
+            );
+    
+            chart.render();
+    }
+    
+</script>
+{% endblock js %}

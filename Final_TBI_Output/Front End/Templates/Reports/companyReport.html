@@ -1,0 +1,210 @@
+{% extends "body.html" %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block CSS %}
+{% endblock CSS %}
+
+{% block title %}
+Report
+{% endblock title %}
+
+{% block content %}
+<div class="main-content">
+    <section class="section">
+    <div class="section-header">
+        <div class="col">
+            <h1>Report</h1>
+        </div>
+    </div>
+    <div class="row">
+        <!-- Customize -->
+        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4>Cusomize your Report</h4>
+                </div>
+                <div class="card-body">
+                    <form action="{% url 'reportCompany' %}" class="row" method="post">
+                        {% csrf_token %}
+
+                        <div class="col-3">
+                            <div class="form-group">
+                                <div id="" class="form-group">
+                                    <label for="id_startAge" class=" requiredField">
+                                        Year From<span class="asteriskField">*</span>
+                                    </label>
+                                    <div class="">
+                                        <input type="number" placeholder="YYYY" name="startYear" class="form-control" min=2005 max=2100 required="" id="id_startYear" value="{{ from }}">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-3">
+                            <div class="form-group">
+                                <div id="" class="form-group">
+                                    <label for="id_endYear" class=" requiredField">
+                                        Year To<span class="asteriskField">*</span>
+                                    </label>
+                                    <div class="">
+                                        <input type="number" placeholder="YYYY" name="toYear" class="form-control" min=2005 max=2100 required id="id_endYear" value="{{ to }}">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-1">
+                            <div class="form-group">
+                                <div id="" class="form-group">
+                                    <div class="">
+                                        <input type="submit" value="Fetch" class="btn btn-primary m-t-35">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- chart -->
+
+        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4>Company Age Analytics</h4>
+                </div>
+                <div class="card-body">
+                    <div class="recent-report__chart">
+                    <div id="company"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- data -->
+        <div class="col-12 col-sm-12 col-lg-12">
+        <div class="card">
+            <div class="card-header">
+            <h4>Fund Report</h4>
+            </div>
+            <div class="card-body">
+            <div class="table-responsive table-invoice">
+                <table class="table table-striped text-center">
+                    <thead>
+                        <tr>
+                            <th>Year</th>
+                            <th>No. of Incubatees</th>
+                            <th>Company Age</th>
+                        </tr>
+                    </thead>
+                {% for i in report %}
+                <tr>
+                    <td>{{ i.financialYear }}</td>
+                    <td class="text-center">{{ i.total }}</td>
+                    <td class="pt-2 pb-2">
+                        <div class="d-flex justify-content-center">
+                            <ul class="list-group">
+                        {% for keys,j in i.age.items %}
+                                <li class="list-group-item p-1">
+                                    <span class="col text-end">
+                                        {{ keys }}
+                                    </span>
+                                    <span class="col text-start">
+                                        {{ j }}
+                                    </span>
+                                </li>
+                                {% empty %}
+                                <div>No Incubatee Available</div>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </td>
+        
+                </tr>
+                {% endfor %}
+                </table>
+            </div>
+            </div>
+        </div>
+        </div>
+    </div>
+    </section>  
+</div>
+
+
+
+{% endblock content %}
+
+{% block js %}
+
+<script src="{% static 'Front End/JS/bundles/chart.min.js' %}"></script>
+<script src="{% static 'Front End/JS/bundles/apexcharts.min.js' %}"></script>
+<script>
+    var a = document.getElementById("companyReport");
+    a.classList.add("active");
+    var a = document.getElementById("reports");
+    a.classList.add("active");
+    
+//charts
+'use strict';
+$(function () {
+    companyAge();
+});
+function companyAge(){
+    var options = {
+        chart: {
+            height: 350,
+            type: 'bar',
+        },
+        plotOptions: {
+            bar: {
+                horizontal: false,
+                columnWidth: '55%',
+            },
+        },
+        dataLabels: {
+            enabled: false
+        },
+        stroke: {
+            show: true,
+            width: 2,
+            colors: ['transparent']
+        },
+        series: [{
+            name: 'No. of Companies',
+            data: [{% for keys,j in chart.items %}"{{ j }}",{% endfor %}]
+        }],
+        xaxis: {
+            categories: [{% for keys,j in chart.items %}"{{ keys }}",{% endfor %}],
+            title: {
+                text: 'Age Range'
+            }
+        },
+        yaxis: {
+            title: {
+                text: 'No. of Companies'
+            }
+        },
+        fill: {
+            opacity: 1
+
+        },
+        tooltip: {
+            y: {
+                formatter: function (val) {
+                    return val
+                }
+            }
+        }
+    }
+
+    var chart = new ApexCharts(
+        document.querySelector("#company"),
+        options
+    );
+
+    chart.render();
+}
+</script>
+{% endblock js %}
