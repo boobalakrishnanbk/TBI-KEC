@@ -368,7 +368,7 @@ def fundflow(request):
         funds = aggregate_Amount(fundDisbursement,['prototypeGrant','operationExpenditure','fabLab'])
         i['disbursed'] = currencySeparator(sum([ getAmount(j) for j in funds ]))
         funds = aggregate_Amount(fundUtilization,['prototypeGrant','operationExpenditure','fabLab'])
-        i['utilized'] = currencySeparator(sum([ getAmount(j) for j in funds ]))
+        i['utilized'] = currencySeparator(sum([ getAmount(j['amount']) for j in Project.objects.filter(scheme_id = i['schemeName']).values('amount') ]))
         i['returned'] = currencySeparator(sum([ getAmount(j) for j in aggregate_Amount(fundUtilization,['returnedAmt']) ]))
         i['interest'] = currencySeparator(sum([ getAmount(j) for j in aggregate_Amount(fundUtilization,['interestAmt']) ]))
         try:            
@@ -378,7 +378,10 @@ def fundflow(request):
                 dateList.append(fundDisbursement.order_by('-updateOn').values('updateOn')[0]['updateOn'])
             except:
                 pass
-        i['balance'] = currencySeparator(getAmount(i['disbursed']) - getAmount(i['utilized']) - getAmount(i['returned']) - getAmount(i['interest']))
+        i['balance'] = currencySeparator(getAmount(i['disbursed']) - getAmount(i['utilized']) + getAmount(i['returned']) + getAmount(i['interest']))
+        if getAmount(i['balance']) < 0:
+            i['balance'] = currencySeparator(getAmount(i['amount']))
+            
         i['lastUpdate'] = getRecentDate(dateList)
         
     return render(request, 'fundflow.html', {
@@ -390,6 +393,165 @@ def fundflow(request):
 #fund Flow Years
 @login_required(login_url='/login/')
 def scheme(request,name,pagination):
+            
+    years = FinancialYear.objects.all().order_by('-financialYear').values()
+    pagination_list = [i for i in range(1,(len(years)//10)+2)]
+    if pagination == 1:
+        years = years[:10]
+    else:
+        start = (pagination-1) * 10
+        years = years[start:start+10]
+    openBalance = 0
+    for i in years[::-1]:
+        dateList = []
+        i['sanctioned'] = is_Empty(FundLog.objects.filter(financialYear = i['financialYear'], schemeName = name).values('sanctionedAmt'),'sanctionedAmt')
+        i['total'] = Project.objects.filter(financialYear_id = i['financialYear'], scheme_id = name).values('incubatee').distinct().count()
+        i['openingBalance'] = openBalance
+        fundDisbursement = FundDisbursement.objects.filter(scheme_id = name,financialYear_id = i['financialYear']).values()
+        fundUtilization = FundUtilization.objects.filter(scheme_id = name,financialYear_id = i['financialYear']).values()
+        try:            
+            dateList.append(fundUtilization.order_by('-updateOn').values('updateOn')[0]['updateOn'])
+        except:
+            try:
+                dateList.append(fundDisbursement.order_by('-updateOn').values('updateOn')[0]['updateOn'])
+            except:
+                pass
+        funds = aggregate_Amount(fundDisbursement,['prototypeGrant','operationExpenditure','fabLab'])
+        i['disbursed'] = currencySeparator(sum([ getAmount(j) for j in funds ]))
+        funds = aggregate_Amount(fundUtilization,['prototypeGrant','operationExpenditure','fabLab'])
+        i['utilized'] = currencySeparator(sum([ getAmount(j) for j in funds ]))
+        i['returned'] = currencySeparator(sum([ getAmount(j) for j in aggregate_Amount(fundUtilization,['returnedAmt']) ]))
+        i['interest'] = currencySeparator(sum([ getAmount(j) for j in aggregate_Amount(fundUtilization,['interestAmt']) ]))
+        if i['openingBalance'] != 0:
+            i['balance'] = currencySeparator(getAmount(openBalance) - getAmount(i['disbursed']) - getAmount(i['utilized']) - getAmount(i['returned']) - getAmount(i['interest']))
+        else:
+            i['balance'] = currencySeparator(getAmount(i['disbursed']) - getAmount(i['utilized']) - getAmount(i['returned']) - getAmount(i['interest']))
+            
+        openBalance = i['balance']
+        i['lastUpdate'] = getRecentDate(dateList)
+        
+    # disbursement
+    fund = []
+    toast = []
+    ErrorForm = -1
+    scheme_Obj = Schemes.objects.get(schemeName = name)
+    fundDisbursement = FundDisbursement.objects.filter(scheme = name) 
+    openBalance = getOpeningBalance(fundDisbursement.values().order_by('-disbursedOn'),FundLog.objects.filter( schemeName = name).values().order_by('-id'),['closingBalance','sanctionedAmt'])
+    print(openBalance)
+    if request.POST:
+        if 'addDisbursement' in request.POST:
+            disbursedForm = DisbursementForm(request.POST)
+            if disbursedForm.is_valid():
+                disbursedForm = disbursedForm.save(commit=False)
+                disbursedForm.scheme = scheme_Obj
+                disbursedForm.save()
+                toast = ["success","Fund Disbursement was added Successfully."]
+                disbursedForm = DisbursementForm(initial = {"openingBalance":openBalance,})
+            
+            else:
+                ErrorForm = 1
+    openBalance = getOpeningBalance(fundDisbursement.values().order_by('-disbursedOn'),FundLog.objects.filter(schemeName = name).values().order_by('-id'),['closingBalance','sanctionedAmt'])
+    disbursedForm = DisbursementForm(initial = {"openingBalance":openBalance,})
+            
+    disbursements = fundDisbursement.values()
+    for i in disbursements:
+        i['total'] = currencySeparator(getAmount(i['prototypeGrant']) + getAmount(i['operationExpenditure']) + getAmount(i['fabLab']))
+
+    # sanction table
+    fund = fund + aggregate_Amount(disbursements,['prototypeGrant','operationExpenditure','fabLab'])
+    fund.append(getSum(fund))
+    fund.append(is_Empty(FundLog.objects.filter(schemeName = name).values('sanctionedAmt'),'sanctionedAmt'))
+
+
+# utilization
+    fund1 = []
+    ErrorForm = -1
+    fundUtilization = FundUtilization.objects.filter(scheme = name).values()
+    scheme_Obj = Schemes.objects.get(schemeName = name)
+    fundDisbursement = FundDisbursement.objects.filter(scheme_id = name).values()
+    
+    openBalance = getAmount(aggregate_Amount(fundUtilization,['prototypeGrant']))
+    openBalance += getAmount(fund[1]) + getAmount(fund[2])
+    if getAmount(openBalance) < getAmount(fund[3]):
+        openBalance = currencySeparator(getAmount(fund[3]) - openBalance)
+        
+    # from and to date:
+    try:
+        fromDate = fundUtilization.order_by('-toDate')[0]['toDate'] + timedelta(days=1)
+    except:
+        fromDate = fundDisbursement.values('disbursedOn')[0]['disbursedOn']
+    toDate = datetime.date.today()
+    # prototype grant amount
+    project = Project.objects.filter(scheme_id = name).values('id')
+    amount = Installment.objects.filter(project__in = project,disbursedOn__range = [fromDate,toDate]).values('disbursedAmt')
+    amount = aggregate_Amount(amount,['disbursedAmt'])
+    
+    utilizedForm = UtilizatedForm(initial = {
+        "openingBalance":openBalance,
+        "fromDate":fromDate,
+        "toDate":toDate,
+        "prototypeGrant":amount[0],
+        "closingBalance": currencySeparator(getAmount(openBalance) - getAmount(amount[0]))
+    })
+    if request.POST:
+        if 'addUtilization' in request.POST:
+            utilizedForm = UtilizatedForm(request.POST)
+            if utilizedForm.is_valid():
+                utilizedForm = utilizedForm.save(commit=False)
+                utilizedForm.financialYear = FinancialYear.objects.get(financialYear = years)
+                utilizedForm.scheme = scheme_Obj
+                utilizedForm.save()
+                toast = ["success","Fund Utilization was added Successfully."]
+                utilizedForm = UtilizatedForm(initial = {"openingBalance":openBalance,})
+            
+            else:
+                ErrorForm = 1
+            
+    utilization = fundUtilization
+    openBal = closeBal = 0
+    for i in utilization:
+        i['total'] = currencySeparator(
+            getAmount(i['prototypeGrant']) + 
+            getAmount(i['operationExpenditure']) + 
+            getAmount(i['fabLab']) 
+        )
+        if openBal < getAmount(i['openingBalance']):
+            i['addingBalance'] = currencySeparator(getAmount(i['openingBalance']) - openBal)
+            i['openingBalance'] = currencySeparator(openBal)
+        else:
+            i['addingBalance'] = 0
+            
+        openBal = getAmount(i['closingBalance'])
+        print(openBal,getAmount(i['openingBalance']))
+    # sanction table
+    fund1 = fund1 + aggregate_Amount(utilization,['prototypeGrant'])
+    fund1 = fund1 + aggregate_Amount(fundDisbursement,['operationExpenditure','fabLab'])
+    fund1 = fund1 + aggregate_Amount(utilization,['interestAmt' , 'returnedAmt'])
+    fund1.append(getSum(fund1))
+    fund1.append(is_Empty(FundLog.objects.filter(schemeName = name).values('sanctionedAmt'),'sanctionedAmt'))
+    
+    # return render(request, 'fund_Utilization.html', {
+    #     "schemeName":name,
+    #     "year":years,
+    #     "toast":toast,
+    #     "ErrorForm":ErrorForm,
+    # })
+    return render(request, 'scheme.html', {
+        "fund1":fund1,
+        "utilizations":utilization,
+        "utilizedForm":utilizedForm,
+        "fund":fund,
+        "disbursements":disbursements,
+        "disbursedForm":disbursedForm,
+        "toast":toast,
+        "ErrorForm":ErrorForm,
+        "years":years,
+        "schemeName":name,
+        "pagination":pagination_list,
+        "active_page":pagination,
+    })
+@login_required(login_url='/login/')
+def scheme1(request,name,pagination):
             
     years = FinancialYear.objects.all().order_by('-financialYear').values()
     pagination_list = [i for i in range(1,(len(years)//10)+2)]
@@ -509,7 +671,6 @@ def fund_Disbursement(request,name,years=None):
             disbursedForm = DisbursementForm(request.POST)
             if disbursedForm.is_valid():
                 disbursedForm = disbursedForm.save(commit=False)
-                disbursedForm.financialYear = FinancialYear.objects.get(financialYear = years)
                 disbursedForm.scheme = scheme_Obj
                 disbursedForm.save()
                 toast = ["success","Fund Disbursement was added Successfully."]
@@ -545,10 +706,10 @@ def fund_Utilization(request,name,years=None):
     fund = []
     toast = []
     ErrorForm = -1
-    fundUtilization = FundUtilization.objects.filter(financialYear = years,scheme = name).values()
+    fundUtilization = FundUtilization.objects.filter(scheme = name).values()
     scheme_Obj = Schemes.objects.get(schemeName = name)
-    fundDisbursement = FundDisbursement.objects.filter(financialYear_id = years, scheme_id = name).values()
-    openBalance = getAmount(FundLog.objects.filter(financialYear = years, schemeName = name).values()[0]['sanctionedAmt']) - getAmount(fundDisbursement.order_by('-id')[0]['closingBalance'])
+    fundDisbursement = FundDisbursement.objects.filter( scheme_id = name).values()
+    openBalance = getAmount(FundLog.objects.filter( schemeName = name).values()[0]['sanctionedAmt']) - getAmount(fundDisbursement.order_by('-id')[0]['closingBalance'])
     openBalance = currencySeparator(getOpeningBalance(fundUtilization,[{"closingBalance":openBalance}],['closingBalance','closingBalance']))
     
     # from and to date:
@@ -574,7 +735,6 @@ def fund_Utilization(request,name,years=None):
             utilizedForm = UtilizatedForm(request.POST)
             if utilizedForm.is_valid():
                 utilizedForm = utilizedForm.save(commit=False)
-                utilizedForm.financialYear = FinancialYear.objects.get(financialYear = years)
                 utilizedForm.scheme = scheme_Obj
                 utilizedForm.save()
                 toast = ["success","Fund Utilization was added Successfully."]
@@ -594,10 +754,9 @@ def fund_Utilization(request,name,years=None):
         )
 
     # sanction table
-    fund.append(years)
     fund = fund + aggregate_Amount(utilization,['prototypeGrant','operationExpenditure','fabLab', 'interestAmt' , 'returnedAmt'])
-    fund.append(getSum(fund[1:]))
-    fund.append(is_Empty(FundLog.objects.filter(financialYear = years, schemeName = name).values('sanctionedAmt'),'sanctionedAmt'))
+    fund.append(getSum(fund))
+    fund.append(is_Empty(FundLog.objects.filter(schemeName = name).values('sanctionedAmt'),'sanctionedAmt'))
     
     return render(request, 'fund_Utilization.html', {
         "fund":fund,
@@ -681,7 +840,6 @@ def incubatees(request,pagination = 1):
         if len(request.POST.getlist('financialYears')) >= 1:
             incubatees = incubatees.values().exclude(financialYear__in = financialYears_excluded)
             # incubatee_list = [j['incubatee'] for j in Project.objects.exclude(scheme__in = schemes_excluded).values('incubatee')]
-            print(incubatees)
             # incubatees = incubatees.filter(incubatee_ID__in = incubatee_list)
             
         if len(request.POST.getlist('schemes')) >= 1:

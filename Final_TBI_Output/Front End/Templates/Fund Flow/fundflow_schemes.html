@@ -8,25 +8,37 @@ Fund Flow
 
 {% block content %}
 <!-- Modal -->
-<div class="modal fade" id="fundflowModal" tabindex="-1" role="dialog" aria-labelledby="fundflowModalTitle" aria-hidden="true">
+<div
+    class="modal fade"
+    id="fundflowModal"
+    tabindex="-1"
+    role="dialog"
+    aria-labelledby="fundflowModalTitle"
+    aria-hidden="true"
+>
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
             <form action="{% url 'fundflow' %}" method="post">
                 {% csrf_token %}
                 <div class="modal-header">
                     <h5 class="modal-title" id="fundflowModalTitle">Add Fund</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <button
+                        type="button"
+                        class="close"
+                        data-dismiss="modal"
+                        aria-label="Close"
+                    >
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <div class="modal-body">
                     <div class="row">
                         {% for field in fundLogForm %}
-                            <div class="col-12">
-                                <div class="form-group">
-                                    {{ field|as_crispy_field }}
-                                </div>
+                        <div class="col-12">
+                            <div class="form-group">
+                                {{ field|as_crispy_field }}
                             </div>
+                        </div>
                         {% endfor %}
                     </div>
                 </div>
@@ -38,109 +50,114 @@ Fund Flow
         </div>
     </div>
 </div>
-
 <div class="main-content">
     <section class="section">
-    <div class="section-header">
-        <div class="col">
-            <h1>{{ schemeName }}</h1>
-        </div>
-        <div class="d-flex justify-content-end btn-group">
-            <!-- <button type="button" class="btn btn-icon icon-left btn-primary" id="fundaddbtn" data-toggle="modal" data-target="#fundflowModal"><i class="fas fa-plus"></i> Add Fund</button> -->
-            <a class="btn btn-success" href="{% url 'fund_Disbursement' name=schemeName years=2022 %}"><i class="fa fa-plus"></i> Disbursement</a>
-            <a class="btn btn-warning" href="{% url 'fund_Utilization' name=schemeName years=2022 %}"><i class="fa fa-plus"></i> Utilization</a>
-        </div>
-        <div class="ml-3 section-header-breadcrumb">
-            <div class="breadcrumb-item active"><a href="{% url 'home' %}">Home</a></div>
-            <div class="breadcrumb-item"><a href="{% url 'fundflow' %}">Fund Flow Schemes</a></div>
-            <div class="breadcrumb-item">Years</div>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-12 col-sm-12 col-lg-12">
-        <div class="card">
-            <div class="card-header">
-            <h4>Scheme Funds By Years</h4>
+        <div class="section-header">
+            <div class="col">
+                <h1>{{ schemeName }}</h1>
             </div>
-            <div class="card-body">
-            <div class="table-responsive table-invoice">
-                <table class="table text-right table-striped">
-                    <thead>
-                        <th>#</th>
-                        <th class="text-center">Financial Year</th>
-                        <th class="text-center">No. of Incubatees</th>
-                        <th>Total Sanctioned</th>
-                        <th>Total Disbursed</th>
-                        <th>Total Utilized</th>
-                        <th>Total Returned</th>
-                        <th>Interest Earned</th>
-                        <th>Total Balance</th>
-                        <th>Last Update On</th>
-                        <!-- <th class="text-center">Action</th> -->
-                    </thead>
-                    <tbody>
-                        {% for i in years %}
-                          
-                        <tr>
-                            <td>{{ forloop.counter }}</td>
-                            <td  class="text-center text-dark"><b>{{ i.financialYear }}</b></td>
-                            <td class="text-center">{{ i.total }}</td>
-                            <td>
-                                <div class="badge badge-info">₹ {{ i.sanctioned }}</div>
-                            </td>
-                            <td class="text-dark">₹ {{ i.disbursed }}</td>
-                            <td class="text-dark">₹ {{ i.utilized }}</td>
-                            <td class="text-dark">₹ {{ i.returned }}</td>
-                            <td class="text-dark">₹ {{ i.interest }}</td>
-                            <td>
-                                <div class="badge badge-primary">₹ {{ i.balance }}</div>
-                            </td>
-                            <td>
-                                {% if i.lastUpdate == "" %}
-                                No Recent Actions
-                                {% else %}
-                                <div class="badge badge-secondary">{{ i.lastUpdate }}</div>
-                                {% endif %}
-                            </td>  
-                            <!-- <td>
-                                {% if i.sanctioned != 0 %}
-                                <a class="btn btn-success" href="{% url 'fund_Disbursement' name=schemeName years=i.financialYear %}"><i class="fa fa-plus"></i> Disbursement</a>
-                                <a class="btn btn-warning" href="{% url 'fund_Utilization' name=schemeName years=i.financialYear %}"><i class="fa fa-plus"></i> Utilization</a>
-                                {% endif %}
-                            </td>                   -->
-                        </tr>
-                        {% endfor %}
-
-                    </tbody>
-            </table>
-
-            <tfoot class="text-right">
-                <nav class="d-flex justify-content-end col-12">
-                  <ul class="pagination mb-0">
-                    <li class="page-item {% if active_page == 1 %} disabled {% endif %}">
-                        <a class="page-link" href="{% url 'scheme' name=schemeName pagination=active_page|add:-1 %}" tabindex="-1"><i class="fas fa-chevron-left"></i></a>
-                    </li>
-                    {% for i in pagination %}
-                    <li class="page-item {% if active_page == i %} active {% endif %}">
-                        <a class="page-link" href="{% url 'scheme' name=schemeName pagination=i %}">{{ i }} <span class="sr-only">(current)</span></a>
-                    </li>
-                    {% endfor %}
-                    <li class="page-item {% if pagination|length == active_page %} disabled {% endif %} ">
-                        <a class="page-link" href="{% url 'scheme' name=schemeName pagination=active_page|add:1 %}"><i class="fas fa-chevron-right"></i></a>
-                    </li>
-                  </ul>
-                </nav>
-            </tfoot>
-        </div>
+            <div class="d-flex justify-content-end btn-group">
+                <!-- <button type="button" class="btn btn-icon icon-left btn-primary" id="fundaddbtn" data-toggle="modal" data-target="#fundflowModal"><i class="fas fa-plus"></i> Add Fund</button> -->
+                <a class="btn btn-success" href="{% url 'fund_Disbursement' name=schemeName %}"><i class="fa fa-plus"></i>Disbursement</a>
+                <a class="btn btn-warning" href="{% url 'fund_Utilization' name=schemeName years=2022 %}"><i class="fa fa-plus"></i>Utilization</a>
+            </div>
+            <div class="ml-3 section-header-breadcrumb">
+                <div class="breadcrumb-item active">
+                    <a href="{% url 'home' %}">Home</a>
+                </div>
+                <div class="breadcrumb-item">
+                    <a href="{% url 'fundflow' %}">Fund Flow</a>
+                </div>
+                <div class="breadcrumb-item">Years</div>
             </div>
         </div>
+        <div class="row">
+            <div class="col-12 col-sm-12 col-lg-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h4>Funds By Years</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive table-invoice">
+                            <table class="table text-right table-striped">
+                                <thead>
+                                    <th>#</th>
+                                    <th class="text-center">Financial Year</th>
+                                    <th class="text-center">No. of Incubatees</th>
+                                    <th>Total Sanctioned</th>
+                                    <th>Total Disbursed</th>
+                                    <th>Total Utilized</th>
+                                    <th>Total Returned</th>
+                                    <th>Interest Earned</th>
+                                    <th>Total Balance</th>
+                                    <th>Last Update On</th>
+                                </thead>
+                                <tbody>
+                                    {% for i in years %}
+                                    <tr>
+                                        <td>{{ forloop.counter }}</td>
+                                        <td class="text-center text-dark">
+                                            <b>{{ i.financialYear }}</b>
+                                        </td>
+                                        <td class="text-center">{{ i.total }}</td>
+                                        <td>
+                                            <div class="badge badge-info">₹ {{ i.sanctioned }}</div>
+                                        </td>
+                                        <td class="text-dark">₹ {{ i.disbursed }}</td>
+                                        <td class="text-dark">₹ {{ i.utilized }}</td>
+                                        <td class="text-dark">₹ {{ i.returned }}</td>
+                                        <td class="text-dark">₹ {{ i.interest }}</td>
+                                        <td>
+                                            <div class="badge badge-primary">₹ {{ i.balance }}</div>
+                                        </td>
+                                        <td>
+                                            {% if i.lastUpdate == "" %}
+                                    No Recent Actions
+                                    {% else %}
+                                            <div class="badge badge-secondary">{{ i.lastUpdate }}</div>
+                                            {% endif %}
+                                        </td>
+                                        <!-- <td>
+                                    {% if i.sanctioned != 0 %}
+                                    <a class="btn btn-success" href="{% url 'fund_Disbursement' name=schemeName %}"><i class="fa fa-plus"></i> Disbursement</a>
+                                    <a class="btn btn-warning" href="{% url 'fund_Utilization' name=schemeName years=i.financialYear %}"><i class="fa fa-plus"></i> Utilization</a>
+                                    {% endif %}
+                                </td>                   -->
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                            <tfoot class="text-right">
+                                <nav class="d-flex justify-content-end col-12">
+                                    <ul class="pagination mb-0">
+                                        <li class="page-item {% if active_page == 1 %} disabled {% endif %}">
+                                            <a class="page-link" href="{% url 'scheme' name=schemeName pagination=active_page|add:-1 %}" tabindex="-1">
+                                                <i class="fas fa-chevron-left"></i>
+                                            </a>
+                                        </li>
+                                        {% for i in pagination %}
+                                        <li class="page-item {% if active_page == i %} active {% endif %}">
+                                            <a class="page-link" href="{% url 'scheme' name=schemeName pagination=i %}">
+                                                {{ i }}
+                                                <span class="sr-only">(current)</span>
+                                            </a>
+                                        </li>
+                                        {% endfor %}
+                                        <li class="page-item {% if pagination|length == active_page %} disabled {% endif %} ">
+                                            <a class="page-link" href="{% url 'scheme' name=schemeName pagination=active_page|add:1 %}">
+                                                <i class="fas fa-chevron-right"></i>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </nav>
+                            </tfoot>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-    </div>
-    </section>  
+    </section>
 </div>
-
-
-
 {% endblock content %}
 
 {% block js %}

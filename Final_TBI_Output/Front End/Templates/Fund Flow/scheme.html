@@ -1,0 +1,221 @@
+{% extends "body.html" %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block CSS %}
+<link rel="stylesheet" href="{% static 'Front End/CSS/bundles/iziToast.min.css' %}">
+{% endblock CSS %}
+
+{% block title %}
+Fund Flow
+{% endblock title %}
+
+{% block content %}
+<!-- Modal -->
+<div class="modal fade" id="disbursementModal" tabindex="-1" role="dialog" aria-labelledby="disbursementModalTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <form action="{% url 'fund_Disbursement' name=schemeName %}" method="post">
+                <input type="hidden" name="addDisbursement">
+                {% csrf_token %}
+                <div class="modal-header">
+                    <h5 class="modal-title" id="disbursementModalTitle">Add Disbursement</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        {% for field in disbursedForm %}
+                            <div class="col-6">
+                                <div class="form-group">
+                                    {{ field|as_crispy_field }}
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                    <div class="text-danger font-weight-600" id="iderror"></div>
+                </div>
+                <div class="modal-footer bg-whitesmoke br">
+                    <button type="submit" id="submit" class="btn btn-primary">Save</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- utilization -->
+<div class="modal fade" id="utilizationModal" tabindex="-1" role="dialog" aria-labelledby="utilizationModalTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <form action="{% url 'fund_Utilization' name=schemeName %}" method="post">
+                <input type="hidden" name="addUtilization">
+                {% csrf_token %}
+                <div class="modal-header">
+                    <h5 class="modal-title" id="utilizationModalTitle">Add Utilization</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        {% for field in utilizedForm %}
+                            <div class="col-6">
+                                <div class="form-group">
+                                    {{ field|as_crispy_field }}
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                    <div class="text-danger font-weight-600" id="iderror"></div>
+                </div>
+                <div class="modal-footer bg-whitesmoke br">
+                    <button type="submit" class="btn btn-primary" id="submit">Save</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="main-content">
+    <section class="section">
+    <div class="section-header">
+        <div class="col">
+            <h1>{{ schemeName }}</h1>
+        </div>
+        <div class="section-header-breadcrumb">
+            <div class="breadcrumb-item active"><a href="{% url 'home' %}">Home</a></div>
+            <div class="breadcrumb-item"><a href="{% url 'fundflow' %}">Fund Flow</a></div>
+            <!-- <div class="breadcrumb-item"><a href="{% url 'scheme' name=schemeName pagination=1 %}">Years</a></div> -->
+            <!-- <div class="breadcrumb-item"><a href="{% url 'fund_Disbursement' name=schemeName %}">Disbursement</a></div> -->
+            <div class="breadcrumb-item">Scheme</div>
+        </div>
+    </div>
+    <!-- Scheme Overview -->
+    <div class="row">
+        <div class="col-12 col-sm-12 col-lg-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4>Funds By Years</h4>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive table-invoice">
+                        <table class="table text-right table-striped">
+                            <thead>
+                                <th>#</th>
+                                <th class="text-center">Financial Year</th>
+                                <th class="text-center">No. of Incubatees</th>
+                                <th>Total Sanctioned</th>
+                                <th>Opening Balance</th>
+                                <th>Total Disbursed</th>
+                                <th>Total Utilized</th>
+                                <th>Total Returned</th>
+                                <th>Interest Earned</th>
+                                <th>Closing Balance</th>
+                                <th>Last Update On</th>
+                            </thead>
+                            <tbody>
+                                {% for i in years %}
+                                <tr>
+                                    <td>{{ forloop.counter }}</td>
+                                    <td class="text-center text-dark">
+                                        <b>{{ i.financialYear }}</b>
+                                    </td>
+                                    <td class="text-center">{{ i.total }}</td>
+                                    <td>
+                                        <div class="badge badge-info">₹ {{ i.sanctioned }}</div>
+                                    </td>
+                                    <td class="text-dark">₹ {{ i.openingBalance }}</td>
+                                    <td class="text-dark">₹ {{ i.disbursed }}</td>
+                                    <td class="text-dark">₹ {{ i.utilized }}</td>
+                                    <td class="text-dark">₹ {{ i.returned }}</td>
+                                    <td class="text-dark">₹ {{ i.interest }}</td>
+                                    <td>
+                                        <div class="badge badge-primary">₹ {{ i.balance }}</div>
+                                    </td>
+                                    <td>
+                                        {% if i.lastUpdate == "" %}
+                                No Recent Actions
+                                {% else %}
+                                        <div class="badge badge-secondary">{{ i.lastUpdate }}</div>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                        <tfoot class="text-right">
+                            <nav class="d-flex justify-content-end col-12">
+                                <ul class="pagination mb-0">
+                                    <li class="page-item {% if active_page == 1 %} disabled {% endif %}">
+                                        <a class="page-link" href="{% url 'scheme' name=schemeName pagination=active_page|add:-1 %}" tabindex="-1">
+                                            <i class="fas fa-chevron-left"></i>
+                                        </a>
+                                    </li>
+                                    {% for i in pagination %}
+                                    <li class="page-item {% if active_page == i %} active {% endif %}">
+                                        <a class="page-link" href="{% url 'scheme' name=schemeName pagination=i %}">
+                                            {{ i }}
+                                            <span class="sr-only">(current)</span>
+                                        </a>
+                                    </li>
+                                    {% endfor %}
+                                    <li class="page-item {% if pagination|length == active_page %} disabled {% endif %} ">
+                                        <a class="page-link" href="{% url 'scheme' name=schemeName pagination=active_page|add:1 %}">
+                                            <i class="fas fa-chevron-right"></i>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </nav>
+                        </tfoot>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Disbursement -->
+    {% include 'fund_Disbursement.html' %}
+
+    <!-- Utilization -->
+    {% include 'fund_Utilization.html' %}
+
+    <!-- Utilization -->
+    
+    </section>  
+</div>
+
+
+
+{% endblock content %}
+
+{% block js %}
+<script src="{% static 'Front End/JS/bundles/iziToast.min.js' %}"></script>
+<script>
+    var a = document.getElementById("fundflow");
+    a.classList.add("active");
+
+    function toast(){
+        {% if toast.0 == 'error' %}
+        iziToast.error({
+            title: 'Deleted!',
+            message: '{{ toast.1 }}',
+            position: 'topRight'
+        });
+        {% elif toast.0 == 'success' %}
+        iziToast.success({
+            title: 'Added!',
+            message: '{{ toast.1 }}',
+            position: 'topRight'
+        });
+        {% endif %}
+        
+        {% if ErrorForm == 1 %}
+            document.getElementById("disbursementbtn").click();
+        {% elif ErrorForm == 2 %}
+            document.getElementById("utilizationbtn").click();
+        {% endif %}
+    }  
+</script>
+{% endblock js %}

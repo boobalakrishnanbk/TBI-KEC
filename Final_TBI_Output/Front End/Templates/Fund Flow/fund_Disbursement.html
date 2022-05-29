@@ -1,257 +1,157 @@
-{% extends "body.html" %}
-{% load crispy_forms_tags %}
-{% load static %}
-
-{% block CSS %}
-<link rel="stylesheet" href="{% static 'Front End/CSS/bundles/iziToast.min.css' %}">
-{% endblock CSS %}
-
-{% block title %}
-Fund Flow
-{% endblock title %}
-
-{% block content %}
-<!-- Modal -->
-<div class="modal fade" id="disbursementModal" tabindex="-1" role="dialog" aria-labelledby="disbursementModalTitle" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered" role="document">
-        <div class="modal-content">
-            <form action="{% url 'fund_Disbursement' name=schemeName years=year %}" method="post">
-                <input type="hidden" name="addDisbursement">
-                {% csrf_token %}
-                <div class="modal-header">
-                    <h5 class="modal-title" id="disbursementModalTitle">Add Disbursement</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <div class="row">
-                        {% for field in disbursedForm %}
-                            <div class="col-12">
-                                <div class="form-group">
-                                    {{ field|as_crispy_field }}
-                                </div>
-                            </div>
-                        {% endfor %}
-                    </div>
-                    <div class="text-danger font-weight-600" id="iderror"></div>
-                </div>
-                <div class="modal-footer bg-whitesmoke br">
-                    <button type="submit" id="submit" class="btn btn-primary">Save</button>
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-
-<div class="main-content">
-    <section class="section">
-    <div class="section-header">
+<div class="col-12 mb-4 mt-4">
+    <div class="row">
         <div class="col">
-            <h1>{{ schemeName }}</h1>
+            <h3>Disbursement</h3>
         </div>
-        <div class="section-header-breadcrumb">
-            <div class="breadcrumb-item active"><a href="{% url 'home' %}">Home</a></div>
-            <div class="breadcrumb-item"><a href="{% url 'fundflow' %}">Fund Flow Schemes</a></div>
-            <div class="breadcrumb-item"><a href="{% url 'scheme' name=schemeName pagination=1 %}">Years</a></div>
-            <!-- <div class="breadcrumb-item"><a href="{% url 'fund_Disbursement' name=schemeName years=year %}">Disbursement</a></div> -->
-            <div class="breadcrumb-item">Disbursement</div>
+        {% if fund.3 != fund.4 %}
+        <div class="col d-flex justify-content-end">
+            <button type="button" class="btn btn-icon icon-left btn-success" id="disbursementbtn" data-toggle="modal" data-target="#disbursementModal"><i class="fas fa-plus"></i> Add New Disbursement</button>
         </div>
+        {% endif %}
     </div>
-    <!-- Disbursement Overview -->
-    <div class="row">
-        <div class="col-12 col-md-12 col-lg-12">
-            <div class="d-flex justify-content-center">
-                <div class="col-12 col-md-10 col-lg-10">
-                    <div class="card">
-                        <div class="card-header">
-                            <h4>Sanction Amount Details</h4>
-                            <!-- <div class="col d-flex justify-content-end">
-                                <button type="button" class="btn btn-icon icon-left btn-primary" id="fundaddbtn" data-toggle="modal" data-target="#disbursementModal"><i class="fas fa-plus"></i> Add Fund</button>
-                            </div> -->
-                        </div>
-                        <div class="card-body">
-                            <table class="table text-center ">
-                                <thead class="thead-dark">
-                                  <tr class="">
-                                    <th scope="col">#</th>
-                                    <th scope="col">Year</th>
-                                    <th scope="col">FUND AMOUNT</th>
-                                    <th scope="col">OPERATING AMOUNT</th>
-                                    <th scope="col">CAPITAL AMOUNT</th>
-                                    <th scope="col">TOTAL</th>
-                                    <th scope="col">SANCTIONED</th>
-                                    <th scope="col">STATUS</th>
-                                  </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <th scope="row">1</th>
-                                        <td>{{ fund.0 }}</td>
-                                        <td>₹ {{ fund.3 }}</td>
-                                        <td>₹ {{ fund.2 }}</td>
-                                        <td>₹ {{ fund.1 }}</td>
-                                        <td>₹ {{ fund.4 }}</td>
-                                        <td>₹ {{ fund.5 }}</td>
-                                        <td>
-                                            {% if fund.4 == fund.5 %}
-                                            <div class="badge badge-success">Fully Disbursed</div>
-                                            {% else %}
-                                            <div class="badge badge-danger">{% if fund.4 == '0' %}No Disbursements{% else %}Pending{% endif %}</div>
-                                            {% endif %}
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
+</div>
+
+<div class="row">
+    <div class="col-12 col-md-12 col-lg-12">
+        <div class="d-flex justify-content-center">
+            <div class="col-12 col-md-12 col-lg-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h4>Disbursed Fund Till Today</h4>
+                    </div>
+                    <div class="card-body">
+                        <table class="table text-center ">
+                            <thead class="thead-dark">
+                              <tr class="">
+                                  <th scope="col">CAPITAL AMOUNT</th>
+                                  <th scope="col">OPERATING AMOUNT</th>
+                                  <th scope="col">FUND AMOUNT</th>
+                                  <th scope="col">TOTAL</th>
+                                <th scope="col">SANCTIONED</th>
+                                <th scope="col">STATUS</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>₹ {{ fund.0 }}</td>
+                                    <td>₹ {{ fund.1 }}</td>
+                                    <td>₹ {{ fund.2 }}</td>
+                                    <td>₹ {{ fund.3 }}</td>
+                                    <td>₹ {{ fund.4 }}</td>
+                                    <td>
+                                        {% if fund.4 == fund.5 %}
+                                        <div class="badge badge-success">Fully Disbursed</div>
+                                        {% else %}
+                                        <div class="badge badge-danger">{% if fund.4 == '0' %}No Disbursements{% else %}Pending{% endif %}</div>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    <!-- Disbursement -->
-    <div class="col-12 mb-4 mt-4">
-        <div class="row">
-            <div class="col">
-                <h3>Disbursement</h3>
-            </div>
-            {% if fund.4 != fund.5 %}
-            <div class="col d-flex justify-content-end">
-                <button type="button" class="btn btn-icon icon-left btn-primary" id="disbursementbtn" data-toggle="modal" data-target="#disbursementModal"><i class="fas fa-plus"></i> Add New Disbursement</button>
-            </div>
-            {% endif %}
-        </div>
-    </div>
-    <div class="row">
-    {% for i in disbursements %}
-    <div class="col-12 col-md-4 col-lg-4">
-        <div class="pricing pricing-highlight">
-          <div class="pricing-title" style="font-size:medium" >
-            {{ i.disbursedOn }}
-          </div>
-          <div class="pricing-padding">
-            <!-- <div class="pricing-price">
-              <div>$60</div>
-              <div>per month</div>
-            </div> -->
-            <div class="pricing-details">
-              <div class="pricing-item">
-                  {% if i.openingBalance == '0' %}
-                  <div class="pricing-item-icon bg-danger"><i class="fas fa-times"></i></div>
-                  {% else %}
-                  <div class="pricing-item-icon"><i class="fas fa-check"></i></div>
-                  {% endif %}
-                <div class="pricing-item-label row col-12">
-                    <div class="col-10 ">OPENING BALANCE</div>
-                    <div class="col-2 d-flex justify-content-end font-weight-bold"> <span class="pr-2">₹</span> {{ i.openingBalance }}</div>
-                </div>
-              </div>
-              <div class="pricing-item">
-                  {% if i.fabLab == '0' %}
-                  <div class="pricing-item-icon bg-danger"><i class="fas fa-times"></i></div>
-                  {% else %}
-                  <div class="pricing-item-icon"><i class="fas fa-check"></i></div>
-                  {% endif %}
-                <div class="pricing-item-label row col-12">
-                    <div class="col-10 ">FUND AMOUNT</div>
-                    <div class="col-2 d-flex justify-content-end font-weight-bold"> <span class="pr-2">₹</span> {{ i.fabLab }}</div>
-                </div>
-              </div>
-              <div class="pricing-item">
-                  {% if i.operationExpenditure == '0' %}
-                  <div class="pricing-item-icon bg-danger"><i class="fas fa-times"></i></div>
-                  {% else %}
-                  <div class="pricing-item-icon"><i class="fas fa-check"></i></div>
-                  {% endif %}
-                <div class="pricing-item-label row col-12">
-                    <div class="col-10 ">OPERATING AMOUNT</div>
-                    <div class="col-2 d-flex justify-content-end font-weight-bold"> <span class="pr-2">₹</span> {{ i.operationExpenditure }}</div>
-                </div>
-              </div>
-              <div class="pricing-item">
-                  {% if i.prototypeGrant == '0' %}
-                  <div class="pricing-item-icon bg-danger"><i class="fas fa-times"></i></div>
-                  {% else %}
-                  <div class="pricing-item-icon"><i class="fas fa-check"></i></div>
-                  {% endif %}
-                <div class="pricing-item-label row col-12">
-                    <div class="col-10 ">CAPITAL AMOUNT</div>
-                    <div class="col-2 d-flex justify-content-end font-weight-bold"> <span class="pr-2">₹</span> {{ i.prototypeGrant }}</div>
-                </div>
-              </div>
-              <div class="pricing-item">
-                  {% if i.total == '0' %}
-                  <div class="pricing-item-icon bg-danger"><i class="fas fa-times"></i></div>
-                  {% else %}
-                  <div class="pricing-item-icon"><i class="fas fa-check"></i></div>
-                  {% endif %}
-                <div class="pricing-item-label row col-12">
-                    <div class="col-10 ">TOTAL DISBURSED</div>
-                    <div class="col-2 d-flex justify-content-end font-weight-bold"> <span class="pr-2">₹</span> {{ i.total }}</div>
-                </div>
-              </div>
-              <div class="pricing-item">
-                  {% if i.closingBalance == '0' %}
-                  <div class="pricing-item-icon bg-secondary"><i class="fas fa-check"></i></div>
-                  {% else %}
-                  <div class="pricing-item-icon"><i class="fas fa-check"></i></div>
-                  {% endif %}
-                <div class="pricing-item-label row col-12">
-                    <div class="col-10 ">CLOSING BALANCE</div>
-                    <div class="col-2 d-flex justify-content-end font-weight-bold"> <span class="pr-2">₹</span> {{ i.closingBalance }}</div>
-                </div>
-              </div>
-              <div class="pricing-item">
-                  {% if i.comment == '' %}
-                  <div class="pricing-item-icon bg-danger"><i class="fas fa-times"></i></div>
-                  {% else %}
-                  <div class="pricing-item-icon"><i class="fas fa-check"></i></div>
-                  {% endif %}
-                <div class="pricing-item-label row col-12">
-                    <div class="col-12 font-weight-bold mb-2">COMMENTS</div>
-                    <div class="col-12">  {{ i.comment   }}</div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-    </div>
-    {% empty %}
-    {% include 'empty.html' %}
-    {% endfor %}
-    </div>
-    </section>  
 </div>
+<div class="col-12">
+    <div class="row">
 
-
-
-{% endblock content %}
-
-{% block js %}
-<script src="{% static 'Front End/JS/bundles/iziToast.min.js' %}"></script>
-<script>
-    var a = document.getElementById("fundflow");
-    a.classList.add("active");
-
-    function toast(){
-        {% if toast.0 == 'error' %}
-        iziToast.error({
-            title: 'Deleted!',
-            message: '{{ toast.1 }}',
-            position: 'topRight'
-        });
-        {% elif toast.0 == 'success' %}
-        iziToast.success({
-            title: 'Added!',
-            message: '{{ toast.1 }}',
-            position: 'topRight'
-        });
-        {% endif %}
-        
-        {% if ErrorForm == 1 %}
-            document.getElementById("disbursementbtn").click();
-        {% endif %}
-    }  
-</script>
-{% endblock js %}
+        {% for i in disbursements %}
+        <div class="col-12 col-md-4 col-lg-4">
+            <div class="pricing pricing-highlight">
+              <div class="pricing-title" style="font-size:medium" >
+                {{ i.disbursedOn|date:"d/m/Y" }}
+              </div>
+              <div class="pricing-padding">
+                <!-- <div class="pricing-price">
+                  <div>$60</div>
+                  <div>per month</div>
+                </div> -->
+                <div class="pricing-details">
+                  <div class="pricing-item">
+                      {% if i.openingBalance == '0' %}
+                      <div class="pricing-item-icon bg-danger"><i class="fas fa-times"></i></div>
+                      {% else %}
+                      <div class="pricing-item-icon"><i class="fas fa-check"></i></div>
+                      {% endif %}
+                    <div class="pricing-item-label row col-12">
+                        <div class="col-10 ">OPENING BALANCE</div>
+                        <div class="col-2 d-flex justify-content-end font-weight-bold"> <span class="pr-2">₹</span> {{ i.openingBalance }}</div>
+                    </div>
+                  </div>
+                  <div class="pricing-item">
+                      {% if i.fabLab == '0' %}
+                      <div class="pricing-item-icon bg-danger"><i class="fas fa-times"></i></div>
+                      {% else %}
+                      <div class="pricing-item-icon"><i class="fas fa-check"></i></div>
+                      {% endif %}
+                    <div class="pricing-item-label row col-12">
+                        <div class="col-10 ">FUND AMOUNT</div>
+                        <div class="col-2 d-flex justify-content-end font-weight-bold"> <span class="pr-2">₹</span> {{ i.fabLab }}</div>
+                    </div>
+                  </div>
+                  <div class="pricing-item">
+                      {% if i.operationExpenditure == '0' %}
+                      <div class="pricing-item-icon bg-danger"><i class="fas fa-times"></i></div>
+                      {% else %}
+                      <div class="pricing-item-icon"><i class="fas fa-check"></i></div>
+                      {% endif %}
+                    <div class="pricing-item-label row col-12">
+                        <div class="col-10 ">OPERATING AMOUNT</div>
+                        <div class="col-2 d-flex justify-content-end font-weight-bold"> <span class="pr-2">₹</span> {{ i.operationExpenditure }}</div>
+                    </div>
+                  </div>
+                  <div class="pricing-item">
+                      {% if i.prototypeGrant == '0' %}
+                      <div class="pricing-item-icon bg-danger"><i class="fas fa-times"></i></div>
+                      {% else %}
+                      <div class="pricing-item-icon"><i class="fas fa-check"></i></div>
+                      {% endif %}
+                    <div class="pricing-item-label row col-12">
+                        <div class="col-10 ">CAPITAL AMOUNT</div>
+                        <div class="col-2 d-flex justify-content-end font-weight-bold"> <span class="pr-2">₹</span> {{ i.prototypeGrant }}</div>
+                    </div>
+                  </div>
+                  <div class="pricing-item">
+                      {% if i.total == '0' %}
+                      <div class="pricing-item-icon bg-danger"><i class="fas fa-times"></i></div>
+                      {% else %}
+                      <div class="pricing-item-icon"><i class="fas fa-check"></i></div>
+                      {% endif %}
+                    <div class="pricing-item-label row col-12">
+                        <div class="col-10 ">TOTAL DISBURSED</div>
+                        <div class="col-2 d-flex justify-content-end font-weight-bold"> <span class="pr-2">₹</span> {{ i.total }}</div>
+                    </div>
+                  </div>
+                  <div class="pricing-item">
+                      {% if i.closingBalance == '0' %}
+                      <div class="pricing-item-icon bg-secondary"><i class="fas fa-check"></i></div>
+                      {% else %}
+                      <div class="pricing-item-icon"><i class="fas fa-check"></i></div>
+                      {% endif %}
+                    <div class="pricing-item-label row col-12">
+                        <div class="col-10 ">CLOSING BALANCE</div>
+                        <div class="col-2 d-flex justify-content-end font-weight-bold"> <span class="pr-2">₹</span> {{ i.closingBalance }}</div>
+                    </div>
+                  </div>
+                  <div class="pricing-item">
+                      {% if i.comment == '' %}
+                      <div class="pricing-item-icon bg-danger"><i class="fas fa-times"></i></div>
+                      {% else %}
+                      <div class="pricing-item-icon"><i class="fas fa-check"></i></div>
+                      {% endif %}
+                    <div class="pricing-item-label row col-12">
+                        <div class="col-12 font-weight-bold mb-2">COMMENTS</div>
+                        <div class="col-12">  {{ i.comment   }}</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+        </div>
+        {% empty %}
+        {% include 'empty.html' %}
+        {% endfor %}
+    </div>
+</div>

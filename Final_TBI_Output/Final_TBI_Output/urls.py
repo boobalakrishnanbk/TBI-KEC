@@ -52,13 +52,15 @@ urlpatterns = [
 
     # fundflow
     path('fundflow/',views.fundflow,name = 'fundflow'),
-    path('scheme/<str:name>/<int:pagination>',views.scheme,name = 'scheme'),
+    path('scheme1/<str:name>/<int:pagination>',views.scheme1,name = 'scheme'),
     
     path('disbursement_Analysis/<str:name>/<int:pagination>',views.disbursement_Analysis,name = 'disbursement_Analysis'),
     path('utilization_Analysis/<str:name>/<int:pagination>',views.utilization_Analysis,name = 'utilization_Analysis'),
     
-    path('fund_Disbursement/<str:name>/<str:years>',views.fund_Disbursement,name = 'fund_Disbursement'),
-    path('fund_Utilization/<str:name>/<str:years>',views.fund_Utilization,name = 'fund_Utilization'),
+    path('scheme/<str:name>/<int:pagination>',views.scheme,name = 'scheme'),
+    
+    path('fund_Disbursement/<str:name>',views.fund_Disbursement,name = 'fund_Disbursement'),
+    path('fund_Utilization/<str:name>',views.fund_Utilization,name = 'fund_Utilization'),
     
     # incubatees
     path('incubatees/<int:pagination>',views.incubatees,name = 'incubatees'),

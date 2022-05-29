@@ -86,7 +86,7 @@ class DisbursementForm(ModelForm):
                 
     class Meta:
         model = FundDisbursement
-        exclude = ('financialYear','scheme','updateOn')
+        exclude = ('scheme','updateOn')
         widgets = {
             'disbursedOn': DateInput(),
         }
@@ -95,7 +95,7 @@ class UtilizatedForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super(UtilizatedForm, self).__init__(*args, **kwargs)
         for fields in self.fields:
-            if fields in ['openingBalance','closingBalance','prototypeGrant']:
+            if fields in ['openingBalance','closingBalance','prototypeGrant','fromDate']:
                 self.fields[fields].widget.attrs['readonly'] = "true"    
             if fields not in ['fromDate','toDate']:
                 self.fields[fields].widget.attrs['onkeyup'] = masking    + "addToClosingUtlization(this.value);"

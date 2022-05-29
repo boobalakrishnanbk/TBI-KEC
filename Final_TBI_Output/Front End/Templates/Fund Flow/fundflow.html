@@ -57,11 +57,11 @@ Fund Flow
         <div class="col-12 col-sm-12 col-lg-12">
         <div class="card">
             <div class="card-header">
-                <h5>Fund Flow As on date</h5>
-                <div class="col d-flex justify-content-end">
+                <h5>As on date</h5>
+                <!-- <div class="col d-flex justify-content-end">
                     <h6 class="mt-2">Disbursement Analysis </h6><p class="btn btn-success ml-3" style="border-radius: 5px;cursor:default;"><i class="fa fa-arrow-up"></i></p>  
                     <p class="btn btn-warning ml-3 mr-3" style="border-radius: 5px;cursor:default;"><i class="fa fa-arrow-down"></i></p> <h6 class="mt-2"> Utilization Analysis </h6> 
-                </div>
+                </div> -->
             </div>
             <div class="card-body">
             <div class="table-responsive text-right table-invoice">
@@ -77,7 +77,7 @@ Fund Flow
                     <th>Interest Earned</th>
                     <th>Total Balance</th>
                     <th>Last Update On</th>
-                    <th class="text-left">Analysis</th>
+                    <!-- <th class="text-left">Analysis</th> -->
                 </tr>
                 {% for i in schemes %}
                   
@@ -102,7 +102,7 @@ Fund Flow
                         <div class="badge badge-secondary">{{ i.lastUpdate }}</div>
                         {% endif %}
                     </td>                    
-                    <td class="text-left">
+                    <!-- <td class="text-left">
                         <span>
                             {% if i.disbursed != "0" %}
                             <a class="btn btn-success" href="{% url 'disbursement_Analysis' name=i.schemeName pagination=1 %}"><i class="fa fa-arrow-up"></i> </a>
@@ -113,7 +113,7 @@ Fund Flow
                             <a class="btn btn-warning" href="{% url 'utilization_Analysis' name=i.schemeName pagination=1 %}"><i class="fa fa-arrow-down"></i></a>
                             {% endif %}
                         </span>
-                    </td>                    
+                    </td>                     -->
                 </tr>
                 {% empty %}
                 <tr><td colspan=11>
