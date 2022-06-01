@@ -134,14 +134,14 @@ Settings
                                     <th>#</th>
                                     <th>Scheme Name</th>
                                     <th>Balance</th>
-                                    <th>Status</th>
+                                    <!-- <th>Status</th> -->
                                 </tr>
                                 {% for i in Scheme %}
                                 <tr>
                                     <td>{{ forloop.counter }}</td>
                                     <td>{{ i.schemeName }}</td>
                                     <td>₹ {{ i.amount }}</td>
-                                    <td>
+                                    <!-- <td>
                                         <form action="{% url 'settings' %}" method="post">
                                             {% csrf_token %}
                                             <input type="hidden" name="toggleScheme" value="{{ i.schemeName }}">
@@ -151,7 +151,7 @@ Settings
                                                 <button type="submit" class="btn btn-danger badge badge-danger">Inactive</button>
                                             {% endif %}
                                         </form>
-                                    </td>
+                                    </td> -->
                                 </tr>
                                 {% empty %}
                                 <tr>
@@ -189,19 +189,19 @@ Settings
                         <tr>
                             <th>#</th>
                             <th>Fund Type</th>
-                            <th>Action</th>
+                            <!-- <th>Action</th> -->
                         </tr>
                         {% for i in FundType %}
                         <tr>
                             <td>{{ forloop.counter }}</td>
                             <td>{{ i.fundType }}</td>
-                            <td>
+                            <!-- <td>
                                 <form action="{%  url 'settings' %}" method="post">
                                     {% csrf_token %}
                                     <input type="hidden" name="deleteFundType" value="{{ i.fundType }}">
                                 <button type="submit" class="btn btn-danger fas fa-trash"></button>
                                 </form>
-                            </td>
+                            </td> -->
                         </tr>
                         {% empty %}
                         <tr>
@@ -239,19 +239,19 @@ Settings
                         <tr>
                             <th>#</th>
                             <th>Entity</th>
-                            <th>Action</th>
+                            <!-- <th>Action</th> -->
                         </tr>
                         {% for i in Entities %}
                         <tr>
                             <td>{{ forloop.counter }}</td>
                             <td>{{ i.entityName }}</td>
-                            <td>
+                            <!-- <td>
                                 <form action="{% url 'settings' %}" method="post">
                                     {% csrf_token %}
                                     <input type="hidden" name="deleteEntity" value="{{ i.entityName }}">
                                     <button type="submit" class="btn btn-danger fas fa-trash"></button>
                                 </form>
-                            </td>
+                            </td> -->
                         </tr>
                         {% empty %}
                         <tr>

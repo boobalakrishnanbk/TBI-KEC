@@ -137,7 +137,7 @@ Incubatees
 <div class="modal fade" id="addProjectModal" tabindex="-1" role="dialog" aria-labelledby="addProjectModalTitle" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
       <div class="modal-content">
-          <form action="{% url 'addProject' incubateeID=incubateeID  %}" method="post" enctype="multipart/form-data" id="addProjectForm">
+          <form action="{% url 'addProject' incubateeID=incubateeID project_ID='0'  %}" method="post" enctype="multipart/form-data" id="addProjectForm">
               {% csrf_token %}
               <input type="hidden" name="addProject">
               <div class="modal-header">
@@ -149,6 +149,38 @@ Incubatees
               <div class="modal-body">
                 <div class="row">
                   {% for field in projectForm %}
+                  <div class="col-6">
+                      <div class="form-group">
+                          {{ field|as_crispy_field }}
+                      </div>
+                  </div>
+                  {% endfor %}
+                </div>
+              </div>
+              <div class="modal-footer bg-whitesmoke br">
+                  <button type="submit" class="btn btn-primary">Save</button>
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+              </div>
+          </form>
+      </div>
+  </div>
+</div>
+<!-- Modal Project Edit -->
+<div class="modal fade" id="editProjectModal" tabindex="-1" role="dialog" aria-labelledby="editProjectModalTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+      <div class="modal-content">
+          <form action="{% url 'addProject' incubateeID=incubateeID project_ID=projectID  %}" method="post" enctype="multipart/form-data" id="addProjectForm">
+              {% csrf_token %}
+              <input type="hidden" name="edit">
+              <div class="modal-header">
+                  <h5 class="modal-title" id="editProjectModalTitle">Edit Project</h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                  </button>
+              </div>
+              <div class="modal-body">
+                <div class="row">
+                  {% for field in projectEditForm %}
                   <div class="col-6">
                       <div class="form-group">
                           {{ field|as_crispy_field }}
@@ -314,6 +346,38 @@ Incubatees
               <div class="modal-body">
                 <div class="row">
                   {% for field in productForm %}
+                  <div class="col-6">
+                      <div class="form-group">
+                          {{ field|as_crispy_field }}
+                      </div>
+                  </div>
+                  {% endfor %}
+                </div>
+              </div>
+              <div class="modal-footer bg-whitesmoke br">
+                  <button type="submit" class="btn btn-primary">Save</button>
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+              </div>
+          </form>
+      </div>
+  </div>
+</div>
+<!-- Product -->
+<div class="modal fade" id="addFundRaisedModal" tabindex="-1" role="dialog" aria-labelledby="addFundRaisedModalTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+      <div class="modal-content">
+          <form action="{% url 'addFundRaised' incubateeID=incubateeID project_ID=projectID %}" method="post" enctype="multipart/form-data" id="addProductForm">
+              {% csrf_token %}
+              <input type="hidden" name="addProduct">
+              <div class="modal-header">
+                  <h5 class="modal-title" id="addFundRaisedModalTitle">Add Raised Fund</h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                  </button>
+              </div>
+              <div class="modal-body">
+                <div class="row">
+                  {% for field in fundRaisedForm %}
                   <div class="col-6">
                       <div class="form-group">
                           {{ field|as_crispy_field }}
@@ -837,6 +901,12 @@ Incubatees
                                   Project was Added successfully.
                               </div>
                           </div>
+                          {% elif success == "Project Updated" %}
+                          <div class="">
+                              <div class="alert alert-warning">
+                                  Project was Updated successfully.
+                              </div>
+                          </div>
                           {% endif %} 
                           <div class="row">
                             <div class="col-md-6 col-12">
@@ -851,9 +921,13 @@ Incubatees
                                 </select>
                               </form>
                             </div>
-                            <div class="col-md-4 col-12 p-3 mt-4">
-                            </div>
-                            <div class="col-md-2 col-12 d-flex justify-content-end p-3">
+                            <div class="col-md-2"></div>
+                            <div class="col-md-4 col-12 d-flex justify-content-end p-3 mt-4 btn-group">
+                              {% if projectID %}
+                              <button type="button" class=" btn btn-primary" id="editProjectbtn" data-toggle="modal" data-target="#editProjectModal">
+                                <i class="fas fa-pen"></i> Edit Project
+                              </button>
+                              {% endif %}
                               <button type="button" class=" btn btn-success" id="addProjectbtn" data-toggle="modal" data-target="#addProjectModal">
                                 <i class="fas fa-plus"></i> Add Project
                               </button>

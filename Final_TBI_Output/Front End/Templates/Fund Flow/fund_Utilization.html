@@ -91,39 +91,39 @@
                         </div>
                     </div>
                     <div class="pricing-item">
-                        {% if i.prototypeGrant == '0' %}
+                        {% if i.capitalAmount == '0' %}
                         <div class="pricing-item-icon bg-danger"><i class="fas fa-times"></i></div>
                         {% else %}
                         <div class="pricing-item-icon"><i class="fas fa-check"></i></div>
                         {% endif %}
                         <div class="pricing-item-label row col-12">
                             <div class="col-10 ">CAPITAL AMOUNT</div>
-                            <div class="col-2 d-flex justify-content-end font-weight-bold"> <span class="pr-2">₹</span> {{ i.prototypeGrant }}</div>
+                            <div class="col-2 d-flex justify-content-end font-weight-bold"> <span class="pr-2">₹</span> {{ i.capitalAmount }}</div>
                         </div>
                     </div>
-                    <div class="pricing-item">
-                        {% if i.operationExpenditure == '0' %}
+                    <!-- <div class="pricing-item">
+                        {% if i.operatingAmount == '0' %}
                         <div class="pricing-item-icon bg-danger"><i class="fas fa-times"></i></div>
                         {% else %}
                         <div class="pricing-item-icon"><i class="fas fa-check"></i></div>
                         {% endif %}
                         <div class="pricing-item-label row col-12">
                             <div class="col-10 ">OPERATING AMOUNT</div>
-                            <div class="col-2 d-flex justify-content-end font-weight-bold"> <span class="pr-2">₹</span> {{ i.operationExpenditure }}</div>
+                            <div class="col-2 d-flex justify-content-end font-weight-bold"> <span class="pr-2">₹</span> {{ i.operatingAmount }}</div>
                         </div>
                     </div>
                     <div class="pricing-item">
-                        {% if i.fabLab == '0' %}
+                        {% if i.fundAmount == '0' %}
                         <div class="pricing-item-icon bg-danger"><i class="fas fa-times"></i></div>
                         {% else %}
                         <div class="pricing-item-icon"><i class="fas fa-check"></i></div>
                         {% endif %}
                     <div class="pricing-item-label row col-12">
                         <div class="col-10 ">FUND AMOUNT</div>
-                        <div class="col-2 d-flex justify-content-end font-weight-bold"> <span class="pr-2">₹</span> {{ i.fabLab }}</div>
+                        <div class="col-2 d-flex justify-content-end font-weight-bold"> <span class="pr-2">₹</span> {{ i.fundAmount }}</div>
                     </div>
-                    </div>
-                    <div class="pricing-item">
+                    </div> -->
+                    <!-- <div class="pricing-item">
                         {% if i.total == '0' %}
                         <div class="pricing-item-icon bg-danger"><i class="fas fa-times"></i></div>
                         {% else %}
@@ -133,7 +133,7 @@
                             <div class="col-10 ">TOTAL UTILIZED</div>
                             <div class="col-2 d-flex justify-content-end font-weight-bold"> <span class="pr-2">₹</span> {{ i.total }}</div>
                         </div>
-                    </div>
+                    </div> -->
                     <div class="pricing-item">
                         {% if i.returnedAmt == '0' %}
                         <div class="pricing-item-icon bg-danger"><i class="fas fa-times"></i></div>

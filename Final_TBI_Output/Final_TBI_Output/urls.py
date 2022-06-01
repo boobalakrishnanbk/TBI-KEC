@@ -52,22 +52,22 @@ urlpatterns = [
 
     # fundflow
     path('fundflow/',views.fundflow,name = 'fundflow'),
-    path('scheme1/<str:name>/<int:pagination>',views.scheme1,name = 'scheme'),
+    path('scheme1/<str:name>/<int:pagination>',views.scheme1,name = 'scheme1'),
     
     path('disbursement_Analysis/<str:name>/<int:pagination>',views.disbursement_Analysis,name = 'disbursement_Analysis'),
     path('utilization_Analysis/<str:name>/<int:pagination>',views.utilization_Analysis,name = 'utilization_Analysis'),
     
     path('scheme/<str:name>/<int:pagination>',views.scheme,name = 'scheme'),
     
-    path('fund_Disbursement/<str:name>',views.fund_Disbursement,name = 'fund_Disbursement'),
-    path('fund_Utilization/<str:name>',views.fund_Utilization,name = 'fund_Utilization'),
+    # path('fund_Disbursement/<str:name>',views.fund_Disbursement,name = 'fund_Disbursement'),
+    # path('fund_Utilization/<str:name>',views.fund_Utilization,name = 'fund_Utilization'),
     
     # incubatees
     path('incubatees/<int:pagination>',views.incubatees,name = 'incubatees'),
     path('incubatee/<str:incubateeID>/<str:page>',views.incubatee,name = 'incubatee'),
     
     path('addMember/<str:incubateeID>',views.addMember,name = 'addMember'),
-    path('addProject/<str:incubateeID>',views.addProject,name = 'addProject'),
+    path('addProject/<str:incubateeID>/<str:project_ID>',views.addProject,name = 'addProject'),
     path('addInstallment/<str:incubateeID>/<str:project_ID>',views.addInstallment,name = 'addInstallment'),
     path('addPatent/<str:incubateeID>/<str:project_ID>',views.addPatent,name = 'addPatent'),
     path('addCopyright/<str:incubateeID>/<str:project_ID>',views.addCopyright,name = 'addCopyright'),
@@ -77,11 +77,12 @@ urlpatterns = [
     path('addAwards/<str:incubateeID>/<str:project_ID>',views.addAwards,name = 'addAwards'),
     path('addIntern/<str:incubateeID>/<str:project_ID>',views.addIntern,name = 'addIntern'),
     path('addProduct/<str:incubateeID>/<str:project_ID>',views.addProduct,name = 'addProduct'),
+    path('addFundRaised/<str:incubateeID>/<str:project_ID>',views.addFundRaised,name = 'addFundRaised'),
     
     path('editInstallment/<str:incubateeID>/<str:project_ID>',views.editInstallment,name = 'editInstallment'),
     path('editPatent/<str:incubateeID>/<str:project_ID>',views.editPatent,name = 'editPatent'),
     path('editIncubatee/<str:incubateeID>',views.editIncubatee,name = 'editIncubatee'),
-    path('editIncubateeProject/<str:incubateeID>/<str:project_ID>',views.editIncubateeProject,name = 'editIncubateeProject'),
+    # path('editIncubateeProject/<str:incubateeID>/<str:project_ID>',views.editIncubateeProject,name = 'editIncubateeProject'),
     # reports
     path('reportIncubatee/',views.reportIncubatee,name = 'reportIncubatee'),
     path('reportAge/',views.reportAge,name = 'reportAge'),

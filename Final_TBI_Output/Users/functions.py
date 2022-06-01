@@ -50,7 +50,7 @@ def getOpeningBalance(object1,object2,value_list):
         balance = object1[0][value_list[0]]
     except:
         try:
-            balance = object2[0][value_list[1]]
+            balance = getSum(aggregate_Amount(object2,[value_list[1]]))
         except:
             balance = 0
         

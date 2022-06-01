@@ -24,9 +24,9 @@ function pickYear(value) {
 // addToClosing
 function addToClosingDisbursement(value){
   var open = getAmount(document.getElementById("id_openingBalance").value);
-  var grant = getAmount(document.getElementById("id_prototypeGrant").value);
-  var oe = getAmount(document.getElementById("id_operationExpenditure").value);
-  var fab = getAmount(document.getElementById("id_fabLab").value);
+  var grant = getAmount(document.getElementById("id_capitalAmount").value);
+  var oe = getAmount(document.getElementById("id_operatingAmount").value);
+  var fab = getAmount(document.getElementById("id_fundAmount").value);
   if((open - grant - oe - fab) >= 0){
     document.getElementById("id_closingBalance").value = (open - grant - oe - fab).toLocaleString('en-IN');
     $("#submit").removeAttr("disabled");
@@ -42,9 +42,9 @@ function addToClosingDisbursement(value){
 // addToClosing
 function addToClosingUtlization(value){
   var open = getAmount(document.getElementById("id_openingBalance").value);
-  var grant = getAmount(document.getElementById("id_prototypeGrant").value);
-  var oe = getAmount(document.getElementById("id_operationExpenditure").value);
-  var fab = getAmount(document.getElementById("id_fabLab").value);
+  var grant = getAmount(document.getElementById("id_capitalAmount").value);
+  var oe = getAmount(document.getElementById("id_operatingAmount").value);
+  var fab = getAmount(document.getElementById("id_fundAmount").value);
   var interest = getAmount(document.getElementById("id_interestAmt").value);
   var returned = getAmount(document.getElementById("id_returnedAmt").value);
   if((open - grant - oe - fab + interest + returned) >= 0){
@@ -76,9 +76,9 @@ function editInstallment(id,x){
   var tr = document.getElementById(id);
   var form = document.getElementById("addInstallmentForm");
   var dat = new Date(tr.cells[1].innerHTML);
-  form.elements[3].value = dat.getFullYear().toString() +"-" + String(dat.getMonth()).padStart(2,"0") + "-"+String(dat.getDate()).padStart(2,"0");
+  form.elements[3].value = dat.getFullYear().toString() +"-" + String(dat.getMonth()+1).padStart(2,"0") + "-"+String(dat.getDate()).padStart(2,"0");
   var dat = new Date(tr.cells[2].innerHTML);
-  form.elements[4].value = dat.getFullYear().toString() +"-" + String(dat.getMonth()).padStart(2,"0") + "-"+String(dat.getDate()).padStart(2,"0");
+  form.elements[4].value = dat.getFullYear().toString() +"-" + String(dat.getMonth()+1).padStart(2,"0") + "-"+String(dat.getDate()).padStart(2,"0");
   form.elements[5].value = tr.cells[3].innerText.slice(2);
   form.elements[1].value = x;
   form.action = form.action.replace("addInstallment",'editInstallment');

@@ -15,7 +15,7 @@ Fund Flow
 <div class="modal fade" id="disbursementModal" tabindex="-1" role="dialog" aria-labelledby="disbursementModalTitle" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
         <div class="modal-content">
-            <form action="{% url 'fund_Disbursement' name=schemeName %}" method="post">
+            <form action="{% url 'scheme' name=schemeName pagination=1 %}" method="post">
                 <input type="hidden" name="addDisbursement">
                 {% csrf_token %}
                 <div class="modal-header">
@@ -49,7 +49,7 @@ Fund Flow
 <div class="modal fade" id="utilizationModal" tabindex="-1" role="dialog" aria-labelledby="utilizationModalTitle" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
         <div class="modal-content">
-            <form action="{% url 'fund_Utilization' name=schemeName %}" method="post">
+            <form action="{% url 'scheme' name=schemeName pagination=1 %}" method="post">
                 <input type="hidden" name="addUtilization">
                 {% csrf_token %}
                 <div class="modal-header">
@@ -88,8 +88,6 @@ Fund Flow
         <div class="section-header-breadcrumb">
             <div class="breadcrumb-item active"><a href="{% url 'home' %}">Home</a></div>
             <div class="breadcrumb-item"><a href="{% url 'fundflow' %}">Fund Flow</a></div>
-            <!-- <div class="breadcrumb-item"><a href="{% url 'scheme' name=schemeName pagination=1 %}">Years</a></div> -->
-            <!-- <div class="breadcrumb-item"><a href="{% url 'fund_Disbursement' name=schemeName %}">Disbursement</a></div> -->
             <div class="breadcrumb-item">Scheme</div>
         </div>
     </div>

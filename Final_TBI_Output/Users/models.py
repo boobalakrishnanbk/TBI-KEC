@@ -339,16 +339,16 @@ class FundDisbursement(models.Model):
         null=True, default="0",
         verbose_name='Opening Balance'
     )
-    prototypeGrant = models.CharField(max_length=20,
+    capitalAmount = models.CharField(max_length=20,
         validators = [validators['numbers'],validators['minimum']],
         null=False,
         verbose_name='Prototype Grant'
     )
-    operationExpenditure = models.CharField(max_length=20,
+    operatingAmount = models.CharField(max_length=20,
         validators = [validators['numbers'],validators['minimum']],
         verbose_name='Operational Expenditure'
     )
-    fabLab = models.CharField(max_length=20,
+    fundAmount = models.CharField(max_length=20,
         validators = [validators['numbers'],validators['minimum']],
         verbose_name='FAB Lab'
     )
@@ -380,19 +380,19 @@ class FundUtilization(models.Model):
         null=True, default="0",
         verbose_name='Opening Balance'
     )
-    prototypeGrant = models.CharField(max_length=20,
+    capitalAmount = models.CharField(max_length=20,
         validators = [validators['numbers'],validators['minimum']],
-        null=False,
+        null=True,
         verbose_name='Prototype Grant'
     )
-    operationExpenditure = models.CharField(max_length=20,
-        validators = [validators['numbers'],validators['minimum']],
-        verbose_name='Operational Expenditure'
-    )
-    fabLab = models.CharField(max_length=20,
-        validators = [validators['numbers'],validators['minimum']],
-        verbose_name='FAB Lab'
-    )
+    # operatingAmount = models.CharField(max_length=20,
+    #     validators = [validators['numbers'],validators['minimum']],
+    #     verbose_name='Operational Expenditure'
+    # )
+    # fundAmount = models.CharField(max_length=20,
+    #     validators = [validators['numbers'],validators['minimum']],
+    #     verbose_name='FAB Lab'
+    # )
     interestAmt = models.CharField(max_length=20,
         validators = [validators['numbers'],validators['minimum']],
         verbose_name='Interest Amount'
@@ -1133,6 +1133,27 @@ class ProjectIntern(models.Model):
         null=True,blank=True,
         verbose_name="Certificate"
     )
+    def __str__(self):
+        return str(self.project) 
+
+class ProjectFundRaised(models.Model):
+    financialYear = models.ForeignKey(
+        FinancialYear, 
+        on_delete=models.CASCADE,
+        verbose_name="Financial Year"    
+    )
+    agency = models.CharField(max_length=50, verbose_name="Agency")
+    project = models.ForeignKey(
+        Project, 
+        on_delete=models.CASCADE,
+    )
+    fundType = models.ForeignKey(
+        FundingType, 
+        on_delete=models.CASCADE,
+    )
+    amount = models.CharField(max_length=20, verbose_name="Amount", null=True, blank=True, validators=[validators['numbers']])
+    updateOn = models.DateField(default=datetime.date.today)
+
     def __str__(self):
         return str(self.project) 
 

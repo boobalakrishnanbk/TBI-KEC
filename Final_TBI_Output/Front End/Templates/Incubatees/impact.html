@@ -22,6 +22,9 @@
           <li class="nav-item">
             <a class="nav-link {% if impact_active == 'product' %} active{% endif %}" id="contact-tab4" data-toggle="tab" href="#product" role="tab" aria-controls="contact" aria-selected="true">Product</a>
           </li>
+          <li class="nav-item">
+            <a class="nav-link {% if impact_active == 'fund' %} active{% endif %}" id="contact-tab4" data-toggle="tab" href="#fund" role="tab" aria-controls="contact" aria-selected="true">Fund Raised</a>
+          </li>
         </ul>
       </div>
       <div class="col-12 col-sm-12 col-md-10">
@@ -120,7 +123,7 @@
                                     <tr>
                                         <th scope="row">{{ forloop.counter }}</th>
                                         <td>{{ i.date }}</td>
-                                        <td>₹ {{ i.employment }}</td>
+                                        <td>{{ i.employment }}</td>
                                     </tr>
                                     {% empty %}
                                     <tr>
@@ -398,6 +401,64 @@
                                     {% empty %}
                                     <tr>
                                         <td colspan=6 >
+                                            {% include 'empty.html' %}
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+          </div>
+          <!-- product -->
+          <div class="tab-pane fade {% if impact_active == 'fund' %} active show{% endif %}" id="fund" role="tabpanel" aria-labelledby="contact-tab4">
+            <div class="">
+                {% if success == "Fund Raised Added" %}
+                    <div class="">
+                        <div class="alert alert-success">
+                            Fund Raised was Added successfully.
+                        </div>
+                    </div>
+                {% elif success == "Fund Raised Updated" %}
+                    <div class="">
+                        <div class="alert alert-info">
+                            Fund Raised was Updated successfully.
+                        </div>
+                    </div>                    
+                {% endif %}
+                <div class="">
+                    <div class="card">
+                        <div class="card-header">
+                            <h4>Fund Raised Details</h4>
+                            <div class="col d-flex justify-content-end">
+                                <button type="button" class="btn btn-icon icon-left btn-primary" id="fundaddbtn" data-toggle="modal" data-target="#addFundRaisedModal"><i class="fas fa-plus"></i> Add Raised Fund</button>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <table class="table text-center ">
+                                <thead class="thead-dark">
+                                  <tr class="">
+                                    <th scope="col">#</th>
+                                    <th scope="col">Financial Year</th>
+                                    <th scope="col">Agency</th>
+                                    <th scope="col">Type of Fund</th>
+                                    <th scope="col">Amount</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                    {% for i in fund %}
+                                    <tr>
+                                        <th>{{ forloop.counter }}</th>
+                                        <th>{{ i.financialYear_id }}</th>
+                                        <th>{{ i.agency }}</th>
+                                        <th>{{ i.fundType_id }}</th>
+                                        <th>₹ {{ i.amount }}</th>
+                                    </tr>
+                                    {% empty %}
+                                    <tr>
+                                        <td colspan=5 >
                                             {% include 'empty.html' %}
                                         </td>
                                     </tr>

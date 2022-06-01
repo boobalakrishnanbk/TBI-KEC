@@ -95,14 +95,14 @@ class UtilizatedForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super(UtilizatedForm, self).__init__(*args, **kwargs)
         for fields in self.fields:
-            if fields in ['openingBalance','closingBalance','prototypeGrant','fromDate']:
+            if fields in ['openingBalance','closingBalance','capitalAmount','fromDate']:
                 self.fields[fields].widget.attrs['readonly'] = "true"    
             if fields not in ['fromDate','toDate']:
                 self.fields[fields].widget.attrs['onkeyup'] = masking    + "addToClosingUtlization(this.value);"
                 
     class Meta:
         model = FundUtilization
-        exclude = ('financialYear','scheme','updateOn')
+        exclude = ('scheme','updateOn')
         widgets = {
             'fromDate': DateInput(),
             'toDate': DateInput(),
@@ -160,7 +160,7 @@ class ProjectEditForm(ModelForm):
         
     class Meta:
         model = Project
-        exclude = ('incubatee','updateOn','dropoutDate')
+        exclude = ('incubatee','updateOn','dropoutDate','scheme')
         widgets = {
             'amountSanctionedDate': DateInput(),
             'startDate': DateInput(),
@@ -341,3 +341,13 @@ class ProjectForm(ModelForm):
             'startDate': DateInput(),
         }
         
+class ProjectFundRaisedForm(ModelForm):    
+    def __init__(self, *args, **kwargs):
+        super(ProjectFundRaisedForm, self).__init__(*args, **kwargs)
+        for fields in self.fields:
+            if fields == 'amount':
+                self.fields[fields].widget.attrs['onkeyup'] = masking    
+        
+    class Meta:
+        model = ProjectFundRaised
+        exclude = ('incubatee','updateOn','project')        

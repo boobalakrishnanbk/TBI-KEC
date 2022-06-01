@@ -15,8 +15,8 @@ def visitorPhotos(instance, filename):
 
 def eventPhotos(instance, filename):
     file_path = "Front End/Images/Events/"
-    format = str(instance.event.title) + '_' + \
-        str(instance.event.fromdate) + "_"+ str(instance.event.todate) + \
+    format = str(instance.event.title) + '/' + \
+        str(instance.event.fromdate) + "/"+ str(instance.event.todate) + \
         '.' + filename.split(".")[-1]
     file_path = file_path + format
     return file_path
